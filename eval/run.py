@@ -24,14 +24,25 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 from decode import providers as P                      # noqa: E402
-from decode.pipeline import DecodeEngine, load_vocab   # noqa: E402
+from decode.pipeline import DecodeEngine, coerce, load_vocab   # noqa: E402
 from eval.score import LookResult, score_look, summarise, RunSummary  # noqa: E402
 
 
 def load_golden(d: Path, only_tag: str | None = None) -> list[dict]:
     items = []
+    vocab = load_vocab()
     for f in sorted(d.glob("*.json")):
         g = json.loads(f.read_text())
+        # Golden labels arrive from both the interactive tool and hand-authored
+        # review files. Give multi-fields with an explicit `none` value the same
+        # canonical form as model output before score_look sees them.
+        for garment in g.get("garments", []):
+            for name, spec in vocab["fields"].items():
+                if spec["kind"] != "multi" or name not in garment:
+                    continue
+                value, clean = coerce(vocab, name, garment[name])
+                if clean:
+                    garment[name] = value
         if only_tag and only_tag not in g.get("tags", []):
             continue
         img = d / g["image"]
@@ -52,7 +63,7 @@ def flatten(decode) -> dict:
             row[k] = a.value
             row["_conf"][k] = a.confidence
         gs.append(row)
-    return {"garments": gs, "cost_usd": decode.cost_usd,
+    return {"garments": gs, "ocr": decode.dict()["ocr"], "cost_usd": decode.cost_usd,
             "latency_ms": decode.latency_ms, "state": decode.state()}
 
 

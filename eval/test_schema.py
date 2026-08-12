@@ -52,6 +52,21 @@ def main() -> int:
             bad = set(applies) - set(fields["category"]["values"])
             check(f"{fname}: applies_to are real categories", not bad, f"unknown {sorted(bad)}")
 
+    print("\ncategories in a near-group share applies_to membership")
+    cat_near = [set(group) for group in fields["category"].get("near", [])]
+    for fname, spec in fields.items():
+        applies = spec.get("applies_to")
+        if not applies:
+            continue
+        scope = set(applies)
+        for group in cat_near:
+            inside = group & scope
+            if inside and inside != group:
+                check(f"{fname}: near-group {sorted(group)} split by applies_to", False,
+                      f"in scope: {sorted(inside)}, missing: {sorted(group - inside)}")
+            else:
+                check(f"{fname}: near-group {sorted(group)} consistent", True)
+
     print("\npredicate groundings reference live schema")
     for name, predicate in preds.items():
         for node in (predicate.grounding, predicate.penalise):
@@ -87,7 +102,29 @@ def main() -> int:
     entries = sorted((ROOT / "eval" / "golden_set").glob("*.json"))
     check("golden set is non-empty", bool(entries), "no labelled entries found")
     for path in entries:
-        for index, garment in enumerate(json.loads(path.read_text()).get("garments", [])):
+        entry = json.loads(path.read_text())
+        market = entry.get("market")
+        check(f"{path.name}: market text when supplied",
+              market is None or (isinstance(market, str) and market.strip()), "invalid market")
+        ocr = entry.get("ocr")
+        if ocr is not None:
+            valid_keys = {"brand", "product_title", "price", "source_domain", "evidence"}
+            check(f"{path.name}: OCR keys known", isinstance(ocr, dict) and set(ocr) <= valid_keys,
+                  f"unknown {sorted(set(ocr) - valid_keys) if isinstance(ocr, dict) else 'non-object'}")
+            for name in ("brand", "product_title", "price", "source_domain"):
+                check(f"{path.name}: OCR '{name}' text or null",
+                      ocr.get(name) is None or isinstance(ocr.get(name), str), "invalid type")
+            check(f"{path.name}: OCR evidence strings",
+                  isinstance(ocr.get("evidence", []), list) and
+                  all(isinstance(item, str) for item in ocr.get("evidence", [])), "invalid type")
+        conflicts = entry.get("attribute_conflicts", [])
+        valid_conflict_keys = {"field", "pixel_value", "external_value", "external_source", "resolution"}
+        check(f"{path.name}: attribute conflicts are auditable",
+              isinstance(conflicts, list) and all(
+                  isinstance(conflict, dict) and set(conflict) == valid_conflict_keys and
+                  conflict.get("resolution") == "pixel_read_wins" for conflict in conflicts),
+              "invalid conflict record")
+        for index, garment in enumerate(entry.get("garments", [])):
             for name, value in garment.items():
                 if name in ("role", "brand", "brand_evidence"):
                     continue

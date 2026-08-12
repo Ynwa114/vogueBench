@@ -63,10 +63,21 @@ class Garment:
 
 
 @dataclass
+class OCR:
+    """Literal commerce text read from the full image, never a garment attribute."""
+    brand: str | None = None
+    product_title: str | None = None
+    price: str | None = None
+    source_domain: str | None = None
+    evidence: list[str] = field(default_factory=list)
+
+
+@dataclass
 class Decode:
     decode_id: str
     garments: list[Garment]
     scene: dict[str, Any] = field(default_factory=dict)
+    ocr: OCR = field(default_factory=OCR)
     model: str = ""
     cost_usd: float = 0.0
     latency_ms: int = 0
@@ -102,7 +113,8 @@ class Decode:
 SYSTEM = (
     "You read fashion images for a stylist product. You are precise, never "
     "flattering, and you never invent a brand. You answer only in the controlled "
-    "vocabulary you are given, and you report honest confidence — a low confidence "
+    "vocabulary you are given. Retailer title, price, and OCR are evidence for lookup "
+    "and audit, never authority over the visual garment read. You report honest confidence — a low confidence "
     "is useful to us, a confident wrong answer is expensive."
 )
 
@@ -124,12 +136,20 @@ Return strict JSON:
       "locator": "<short phrase to find it again, e.g. 'cropped jacket over shoulders'>",
       "visibility": "full|partial|barely"}}
   ],
-  "named_brands": ["<only brands literally stated in the caption or visible as text/logo in the image>"]
+  "named_brands": ["<only brands literally stated in the caption or visible as text/logo in the image>"],
+  "ocr": {{
+    "brand": "<literal visible retailer or brand, or null>",
+    "product_title": "<literal visible product title, or null>",
+    "price": "<literal visible price including currency, or null>",
+    "source_domain": "<literal visible website domain, or null>",
+    "evidence": ["<up to 4 short, exact strings read from the image>"]
+  }}
 }}
 
 List garments in reading order: outerwear, top, bottom, onepiece, footwear, bag, accessory.
 Include a garment only if a user would plausibly want to shop it. Ignore garments on
-non-primary subjects.{cap}"""
+non-primary subjects. OCR is a transcription task: only return text that is visible
+in the image. Do not infer, complete, or correct a brand, title, price, or domain.{cap}"""
 
 
 def garment_prompt(vocab: dict, role: str, locator: str, lighting_risk: str) -> str:
@@ -175,7 +195,9 @@ Return strict JSON, no prose:
   "search_phrase": "<how a shopper would type this into a search bar, <=8 words>"
 }}
 
-Never name a brand here. Brand comes from caption or catalogue matching, not from pixels."""
+Never name a brand here. Brand comes from caption or catalogue matching, not from pixels.
+Retailer title, price, and OCR are evidence for exact lookup and audit only; when they
+conflict with what the garment visibly is, the visual read wins and the conflict is logged."""
 
 
 # --------------------------------------------------------------------------- #
@@ -203,6 +225,29 @@ def mine_caption(caption: str | None, known_brands: set[str] | None = None) -> d
             "brand_candidates": sorted(cands.values())}
 
 
+def extract_ocr(raw: Any) -> OCR:
+    """Keep a small, auditable subset of literal commerce text from the scene pass."""
+    raw = raw if isinstance(raw, dict) else {}
+
+    def text(name: str, max_len: int) -> str | None:
+        value = raw.get(name)
+        if not isinstance(value, str):
+            return None
+        value = " ".join(value.split()).strip()
+        return value[:max_len] or None
+
+    evidence = raw.get("evidence", [])
+    evidence = evidence if isinstance(evidence, list) else []
+    return OCR(
+        brand=text("brand", 80),
+        product_title=text("product_title", 240),
+        price=text("price", 48),
+        source_domain=text("source_domain", 120),
+        evidence=[" ".join(item.split())[:160] for item in evidence
+                  if isinstance(item, str) and item.strip()][:4],
+    )
+
+
 # --------------------------------------------------------------------------- #
 # Validation — a value outside the vocabulary is a pipeline failure, not a decode.
 # --------------------------------------------------------------------------- #
@@ -211,6 +256,11 @@ def coerce(vocab: dict, field_name: str, raw: Any) -> tuple[Any, bool]:
     spec = vocab["fields"][field_name]
     legal = set(spec["values"])
     if spec["kind"] == "multi":
+        # `none` is the explicit controlled-vocabulary representation of no
+        # surface detail. Models naturally return an empty list, so canonicalise
+        # that exact clean response rather than silently dropping it.
+        if raw == [] and "none" in legal:
+            return ["none"], True
         vals = raw if isinstance(raw, list) else [raw]
         keep = [str(v).strip().lower().replace(" ", "_") for v in vals]
         keep = [v for v in keep if v in legal]
@@ -259,13 +309,25 @@ class DecodeEngine:
 
         mined = mine_caption(caption, known_brands)
         scene["caption_mined"] = mined
-        # Merge the model's read of on-image/caption brand text with the deterministic
-        # caption mine, deduped case-insensitively. Canonical casing from the known
-        # brand list wins, because that string ends up on the product card.
-        seen: dict[str, str] = {}
-        for b in list(mined["brand_candidates"]) + list(scene.get("named_brands", [])):
-            seen.setdefault(str(b).lower().replace(" ", ""), str(b))
-        named = list(seen.values())
+        ocr = extract_ocr(scene.get("ocr"))
+        scene["ocr"] = asdict(ocr)
+
+        # Preserve provenance: a caption is distinct from literal text read on the
+        # image. Known-brand casing wins where a catalogue has supplied it.
+        canonical = {b.lower().replace(" ", ""): b for b in known_brands or set()}
+        claims: dict[str, tuple[str, str]] = {}
+
+        def add_brand(value: Any, source: str) -> None:
+            if not isinstance(value, str) or not value.strip():
+                return
+            key = value.lower().replace(" ", "")
+            claims.setdefault(key, (canonical.get(key, value.strip()), source))
+
+        for brand in mined["brand_candidates"]:
+            add_brand(brand, "caption")
+        for brand in scene.get("named_brands", []):
+            add_brand(brand, "ocr")
+        add_brand(ocr.brand, "ocr")
 
         # --- pass 2: one read per garment ---
         garments: list[Garment] = []
@@ -296,16 +358,17 @@ class DecodeEngine:
             # "this is Zara" is the single most expensive lie the product can tell.
             # TODO(v0.2): caption-span -> garment attribution ("dress @zara, shoes old").
             primary = not garments
-            claim = len(named) == 1 and primary
+            claim = len(claims) == 1 and primary
+            brand, brand_source = next(iter(claims.values())) if claim else (None, None)
             garments.append(Garment(
                 role=g.get("role", "top"),
                 attrs=attrs,
-                brand=named[0] if claim else None,
-                brand_source="caption" if claim else None,
+                brand=brand,
+                brand_source=brand_source,
                 notes=body.get("search_phrase"),
             ))
 
-        return Decode(decode_id=did, garments=garments, scene=scene,
+        return Decode(decode_id=did, garments=garments, scene=scene, ocr=ocr,
                       model=self.p.name, cost_usd=cost, latency_ms=latency)
 
 

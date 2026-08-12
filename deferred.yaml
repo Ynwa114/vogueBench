@@ -1,0 +1,18 @@
+# Evidence ledger for useful candidate schema changes that have not earned a v0 edit.
+# A single image is a signal, not a taxonomy decision.
+version: "0.1"
+candidates:
+  - field: fabric_look
+    candidate_values: [crinkle, plisse, seersucker]
+    status: observe
+    evidence:
+      - image_id: 0005_navy_crinkle_strapless_dress
+        observation: "Visible crinkle/plisse texture cannot be expressed by the current fabric_look values."
+    decision_rule: "Revisit after at least three independently labelled occurrences."
+  - field: fabric_look
+    candidate: "technical definition or a structured_woven/crepe_look value"
+    status: observe
+    evidence:
+      - source: editor_review_2026-08-13
+        observation: "technical has been used as a catch-all for uncertain structured woven garments on two looks."
+    decision_rule: "Revisit at the third occurrence; decide whether this is a prompt-definition problem or a missing visible look."

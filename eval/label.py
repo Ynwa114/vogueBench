@@ -8,7 +8,7 @@ labelling by CORRECTING a model's read is roughly 4x faster and produces exactly
 the correction pairs the post-training dataset needs later. So this tool
 pre-fills with a decode and asks the editor to fix it.
 
-  python -m eval.label --images inbox/ --provider sonnet --labeller editor_01
+  python -m eval.label --images inbox/ --provider sonnet --labeller editor_01 --market in
   python -m eval.label --images inbox/ --blank          # no pre-fill, cold labelling
 
 Discipline that makes the set worth having:
@@ -101,6 +101,7 @@ def main():
     ap.add_argument("--provider", default=None, help="alias to pre-fill drafts with")
     ap.add_argument("--blank", action="store_true", help="never pre-fill")
     ap.add_argument("--labeller", default="editor_01")
+    ap.add_argument("--market", required=True, help="catalog market for this label set, e.g. in or us")
     ap.add_argument("--blind-every", type=int, default=10)
     args = ap.parse_args()
 
@@ -133,6 +134,13 @@ def main():
         tags = [t.strip() for t in
                 input("tags (mirror_selfie, warm_light, crowded, screenshot...): ").split(",")
                 if t.strip()]
+        print("OCR is literal visible commerce text only; leave blank when not legible.")
+        ocr = {
+            "brand": input("OCR brand: ").strip() or None,
+            "product_title": input("OCR product title: ").strip() or None,
+            "price": input("OCR price (include currency): ").strip() or None,
+            "source_domain": input("OCR source domain: ").strip() or None,
+        }
 
         drafts: list[dict] = []
         if not blind:
@@ -163,6 +171,7 @@ def main():
             continue
 
         rec = {"image_id": iid, "image": f"images/{img.name}", "caption": caption,
+               "market": args.market, "ocr": ocr,
                "tags": tags + (["blind_labelled"] if blind else ["draft_corrected"]),
                "labelled_by": args.labeller, "labelled_at": str(date.today()),
                "garments": garments}

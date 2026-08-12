@@ -274,3 +274,99 @@ the threshold to manufacture a winner.
 | Co-founder | Start backend skeleton + migration plan | Fresh clone/typecheck/migration path works |
 | Both | Choose private image-store workflow | Shared filename/permissions convention exists |
 | Both | Review at looks 10 and 20 | Decide schema fixes only with data |
+
+## Friday 2026-08-14 — catalog and golden-set gates
+
+Two tracks run in parallel. The catalog track creates the inventory needed to validate
+the tagger prompt; Ishan owns human labels. They meet at one hard gate: do not commit
+bulk-tagging spend until the prompt has passed a 50-product catalog-image evaluation.
+
+### Hard rules for the day
+
+- `vocab.yaml` and `predicates.yaml` remain editorial. Report a gap; do not change
+  fields or values to unblock work.
+- Seller copy and Shopify `body_html` are exact-match, brand-evidence, and audit data
+  only. They are never embedded.
+- `labelled_by` is always a person. Automated output remains a draft, never golden.
+- `impressions` is append-only: no updates or deletes.
+- Use only public endpoints; identify the client, rate-limit by domain, respect
+  `robots.txt`, and record blocks/404s rather than bypassing them.
+- End the day with all four offline suites green.
+
+### Track A — catalog (agent)
+
+1. Build `catalog/stores.yaml` with 40–60 Shopify fashion stores. Every store has a
+   domain, `source_tier` (`1` editorially trusted; `2` volume/coverage), and a short
+   source note. Verify one store’s `/products.json` response manually before writing
+   any loop.
+2. Build an idempotent/resumable puller using
+   `GET https://{domain}/products.json?limit=250&page={n}` through the first empty
+   page. Save raw JSON unmodified and write `catalog/pull_report.json` with domain,
+   status, product count, and error. Concurrency is across stores, never within one
+   store; rate-limit per domain and use an identifying contact user-agent.
+3. Normalise to one row per variant while preserving the Shopify product grouping:
+   `sku_id`, `product_id`, `variant_id`, `title`, `vendor`, `product_type`, `tags`,
+   `colour_option`, `size_option`, `price`, `currency`, `in_stock`, `image_urls`,
+   `primary_image_url`, `source_domain`, `source_tier`, and `body_html_raw`.
+   Product grouping is the initial intra-brand design-group signal; do not flatten it
+   away.
+4. Download and locally cache each primary image at a maximum 512px longest edge before
+   any VLM run.
+5. Draw a stratified sample of 50 products across Tier 1 brands and product types;
+   copy slugged images to `inbox_tagger/`; then stop for Ishan’s tagger-gate labels.
+6. Create migrations only (no application surface yet) for `products`, `variants`,
+   `embeddings` (`halfvec`, HNSW `m=16`, `ef_construction=64`), append-only monthly
+   partitioned `impressions`, `attribute_conflicts`, and `model_calls`.
+7. Decide SigLIP hosting—rented GPU or serving provider—and record the decision and
+   cost in `catalog/NOTES.md`.
+8. After Ishan validates the tagger prompt, submit cheap-tier batch tagging in 10k
+   chunks. Each SKU gets schema attributes plus a factual 1–2 sentence description;
+   prohibit lifestyle language. Record every feed-versus-tagger discrepancy with
+   `pixel_read_wins`.
+
+**Track A done when:** 40+ tiered stores, raw pulls and report exist, real variant count
+is known, 512px images are cached, migrations apply, SigLIP hosting is decided, and bulk
+tagging is submitted after—not before—the tagger gate.
+
+### Track B — Ishan’s two golden sets
+
+These are deliberately separate distributions and separate gates.
+
+1. **Tagger gate: 50 catalog products.** Label clean Shopify images from
+   `inbox_tagger/` into `eval/golden_tagger/`. This tests catalog-image reading and
+   gates bulk tagging spend.
+
+   ```bash
+   python -m eval.label --images inbox_tagger/ --blank --labeller ishan --market in
+   ```
+
+2. **Decode gate: real saved looks.** Keep adding mirror selfies, UI-chrome product
+   pages, reels, warm-light images, and partial crops to `eval/golden_set/`. Do not pad
+   with clean Pinterest/catalog photography. Current status: 3 approved real looks and
+   11 draft records pending human review.
+3. At 09:00, ask ten people for twenty saved looks each; this is the slow dependency,
+   so start it before other tasks. Draft-correct for volume and label every tenth look
+   blind.
+
+   ```bash
+   python -m eval.label --images inbox/ --provider sonnet --labeller ishan --market in
+   python -m eval.label --images inbox/ --blank --labeller ishan --market in
+   ```
+
+4. Target 40–60 reviewed decode looks by day end. Fewer real looks are better than a
+   padded but unrepresentative set.
+
+**Track B done when:** 50 person-labelled catalog-product records exist for the tagger
+gate, 40+ reviewed real decode looks exist, and no automated draft is misrepresented as
+gold.
+
+### End-of-day gate
+
+The day is incomplete unless bulk tagging has been submitted after the 50-product
+tagger gate. The rest of the expected evidence is: tiered store list, raw pull/report,
+normalised variants, 512px image cache, applied migrations including `impressions`,
+40+ reviewed decode looks, and all four suites green.
+
+Do not spend the day on retrieval, web UI, TypeScript application code, accounts,
+wishlists, facets, SigLIP embedding runs, or iOS. Those are blocked on the catalog and
+the two evaluation gates.

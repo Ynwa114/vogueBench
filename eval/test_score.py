@@ -2,7 +2,7 @@
 
 import unittest
 
-from decode.pipeline import load_vocab
+from decode.pipeline import coerce, load_vocab
 from eval.score import field_score, score_look, summarise
 
 
@@ -13,6 +13,13 @@ class ScoreTests(unittest.TestCase):
 
     def test_near_colour_receives_partial_credit(self):
         self.assertEqual(field_score(self.vocab, "colour", "navy", "black"), 0.5)
+
+    def test_empty_surface_detail_is_equivalent_to_explicit_none(self):
+        self.assertEqual(field_score(self.vocab, "surface_detail", [], ["none"]), 1.0)
+        self.assertEqual(field_score(self.vocab, "surface_detail", ["none"], []), 1.0)
+        value, clean = coerce(self.vocab, "surface_detail", [])
+        self.assertTrue(clean)
+        self.assertEqual(value, ["none"])
 
     def test_wrong_category_is_a_hard_failure(self):
         gold = {"image_id": "look-1", "garments": [{"role": "onepiece", "category": "dress", "colour": "black"}]}

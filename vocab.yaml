@@ -21,7 +21,7 @@ fields:
     weight: 0.20
     hard: true
     values: [dress, top, shirt, tshirt, knitwear, blazer, jacket, coat, trousers,
-             jeans, shorts, skirt, co_ord, jumpsuit, bikini, monokini, bralette,
+             jeans, shorts, skirt, co_ord, jumpsuit, romper, bikini, monokini, bralette,
              saree, pre_draped_saree, blouse, kurta, kurti, kurta_set, anarkali,
              lehenga, dupatta, salwar, churidar, palazzo, sharara, gharara, shrug,
              shoes, boots, sandals, heels, bag, belt, sunglasses, jewellery, scarf, hat]
@@ -33,6 +33,7 @@ fields:
       - [knitwear, top]
       - [shoes, boots]
       - [sandals, heels]
+      - [jumpsuit, romper]
 
   silhouette:
     kind: single
@@ -41,7 +42,7 @@ fields:
              flared, tapered, slip, wrap, structured, draped]
     applies_to: [dress, top, shirt, tshirt, knitwear, blazer, jacket, coat, trousers,
                  jeans, shorts, skirt, co_ord, jumpsuit, saree, kurta, kurti, kurta_set,
-                 anarkali, lehenga, blouse, palazzo, salwar, churidar, sharara, shrug]
+                 anarkali, lehenga, blouse, palazzo, salwar, churidar, sharara, shrug, romper]
     near:
       - [relaxed, oversized, boxy]
       - [straight, tapered]
@@ -75,7 +76,7 @@ fields:
     kind: single
     weight: 0.05
     values: [solid, stripe, check, floral, animal, geometric, tie_dye, colour_block,
-             paisley, logo, abstract]
+             paisley, polka_dot, logo, abstract]
     near:
       - [check, geometric]
 
@@ -94,7 +95,7 @@ fields:
     values: [bodycon, slim, regular, relaxed, loose, oversized, na]
     applies_to: [dress, top, shirt, tshirt, knitwear, blazer, jacket, coat, trousers,
                  jeans, shorts, skirt, co_ord, jumpsuit, saree, kurta, kurti, kurta_set,
-                 anarkali, lehenga, blouse, palazzo, salwar, churidar, sharara, shrug]
+                 anarkali, lehenga, blouse, palazzo, salwar, churidar, sharara, shrug, romper]
     near:
       - [bodycon, slim]
       - [slim, regular]
@@ -119,7 +120,7 @@ fields:
   neckline:
     kind: single
     weight: 0.06
-    applies_to: [dress, top, shirt, tshirt, knitwear, jumpsuit, co_ord, kurta, kurti, anarkali, blouse]
+    applies_to: [dress, top, shirt, tshirt, knitwear, jumpsuit, romper, co_ord, kurta, kurti, anarkali, blouse]
     values: [crew, scoop, v_neck, deep_v, cowl, square, sweetheart, halter, boat,
              collared, mandarin, polo, mock_neck, turtleneck, strapless, one_shoulder,
              off_shoulder, keyhole, asymmetric, na]
@@ -132,7 +133,7 @@ fields:
   sleeve_length:
     kind: single
     weight: 0.05
-    applies_to: [dress, top, shirt, tshirt, knitwear, blazer, jacket, coat, jumpsuit, co_ord, kurta, kurti, anarkali, blouse]
+    applies_to: [dress, top, shirt, tshirt, knitwear, blazer, jacket, coat, jumpsuit, romper, co_ord, kurta, kurti, anarkali, blouse]
     values: [sleeveless, cap, short, elbow, three_quarter, long, extra_long, na]
     near:
       - [sleeveless, cap]
@@ -146,7 +147,7 @@ fields:
     values: [cropped, waist, hip, tunic, mini, midi, maxi, ankle, full, na]
     applies_to: [dress, top, shirt, tshirt, knitwear, blazer, jacket, coat, trousers,
                  jeans, shorts, skirt, co_ord, jumpsuit, saree, kurta, kurti, kurta_set,
-                 anarkali, lehenga, blouse, palazzo, salwar, churidar, sharara, shrug]
+                 anarkali, lehenga, blouse, palazzo, salwar, churidar, sharara, romper, shrug]
     near:
       - [cropped, waist]
       - [waist, hip]
@@ -175,7 +176,7 @@ fields:
     values: [opaque, semi_sheer, sheer, na]
     applies_to: [dress, top, shirt, tshirt, knitwear, blazer, jacket, coat, trousers,
                  jeans, shorts, skirt, co_ord, jumpsuit, saree, kurta, kurti, kurta_set,
-                 anarkali, lehenga, blouse, palazzo, salwar, churidar, sharara, shrug]
+                 anarkali, lehenga, blouse, palazzo, salwar, churidar, sharara, romper, shrug]
     near:
       - [opaque, semi_sheer]
       - [semi_sheer, sheer]

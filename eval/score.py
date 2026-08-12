@@ -30,13 +30,19 @@ def _near_groups(spec: dict) -> list[set]:
     return [set(g) for g in spec.get("near", [])]
 
 
+def _multi_values(spec: dict, value: Any) -> set:
+    """Canonical form for a multi-valued field at scoring boundaries."""
+    values = set(value or [])
+    return {"none"} if not values and "none" in spec["values"] else values
+
+
 def field_score(vocab: dict, name: str, pred: Any, gold: Any) -> float:
     """0.0–1.0 for one field of one garment."""
     spec = vocab["fields"][name]
     credit = vocab.get("near_credit", 0.5)
 
     if spec["kind"] == "multi":
-        p, g = set(pred or []), set(gold or [])
+        p, g = _multi_values(spec, pred), _multi_values(spec, gold)
         if not p and not g:
             return 1.0
         if not p or not g:
