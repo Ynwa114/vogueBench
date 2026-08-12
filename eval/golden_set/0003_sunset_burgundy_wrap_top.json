@@ -1,0 +1,15 @@
+{
+  "image_id": "0003_sunset_burgundy_wrap_top",
+  "image": "images/0003_sunset_burgundy_wrap_top.png",
+  "caption": null,
+  "tags": ["screenshot", "outdoor_sunset", "warm_light", "low_light", "four_garments", "accessories_present", "blind_labelled"],
+  "labelled_by": "ishan",
+  "labelled_at": "2026-08-12",
+  "review_note": "Human-reviewed, garment-intrinsic occasion and vibe labels.",
+  "garments": [
+    {"role": "top", "category": "top", "silhouette": "wrap", "colour": "burgundy", "pattern": "solid", "surface_detail": ["none"], "fit_ease": "slim", "fabric_look": "jersey", "neckline": "deep_v", "sleeve_length": "sleeveless", "length": "waist", "occasion": ["date", "night_out", "vacation"], "vibe": ["romantic", "y2k"], "sheerness": "opaque"},
+    {"role": "bottom", "category": "skirt", "silhouette": "fitted", "colour": "black", "pattern": "solid", "surface_detail": ["none"], "fit_ease": "slim", "fabric_look": "technical", "length": "mini", "occasion": ["date", "night_out", "vacation"], "vibe": ["y2k", "edgy"], "sheerness": "opaque"},
+    {"role": "footwear", "category": "boots", "colour": "burgundy", "pattern": "solid", "surface_detail": ["none"], "fabric_look": "leather_look", "occasion": ["date", "night_out"], "vibe": ["edgy", "y2k"]},
+    {"role": "bag", "category": "bag", "colour": "black", "pattern": "solid", "surface_detail": ["none"], "fabric_look": "leather_look", "occasion": ["date", "night_out"], "vibe": ["classic", "edgy"]}
+  ]
+}

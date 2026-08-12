@@ -1,0 +1,15 @@
+{
+  "image_id": "0001_mirror_black_offshoulder",
+  "image": "images/0001_mirror_black_offshoulder.png",
+  "caption": null,
+  "tags": ["mirror_selfie", "screenshot", "indoor_warm_light", "four_garments", "accessories_present", "blind_labelled"],
+  "labelled_by": "ishan",
+  "labelled_at": "2026-08-12",
+  "review_note": "Human-reviewed, garment-intrinsic occasion and vibe labels.",
+  "garments": [
+    {"role": "top", "category": "knitwear", "silhouette": "fitted", "colour": "black", "pattern": "solid", "surface_detail": ["none"], "fit_ease": "slim", "fabric_look": "ribbed_knit", "neckline": "off_shoulder", "sleeve_length": "long", "length": "waist", "occasion": ["work", "date", "brunch"], "vibe": ["minimal", "classic", "old_money"], "sheerness": "opaque"},
+    {"role": "bottom", "category": "trousers", "silhouette": "wide_leg", "colour": "white", "pattern": "solid", "surface_detail": ["none"], "fit_ease": "regular", "fabric_look": "cotton_look", "length": "full", "occasion": ["work", "date"], "vibe": ["minimal", "classic", "old_money"], "sheerness": "opaque"},
+    {"role": "accessory", "category": "belt", "colour": "black", "pattern": "solid", "surface_detail": ["none"], "fabric_look": "leather_look", "occasion": ["work", "date"], "vibe": ["classic", "old_money"]},
+    {"role": "bag", "category": "bag", "colour": "black", "pattern": "solid", "surface_detail": ["none"], "fabric_look": "leather_look", "occasion": ["work", "date", "night_out"], "vibe": ["classic", "old_money", "minimal"]}
+  ]
+}

@@ -1,0 +1,197 @@
+# twin. decode vocabulary — v0.1
+#
+# This file IS the definition of "an excellent decode". A decode is correct when
+# every field below is filled with a legal value and that value matches the gold
+# label. Nothing else in the system is allowed to invent an attribute value.
+#
+# Editing rules:
+#   - The founding editor owns this file. Engineers propose, editor merges.
+#   - Adding a value = re-run the full golden set before merge (labels may shift).
+#   - `near` groups define partial credit: confusions a stylist would forgive.
+#   - `weight` is how much the field counts toward the garment score.
+#   - `hard` fields zero the garment when wrong. Only category is hard in v0:
+#     showing trousers for a dress is the one unforgivable failure.
+
+version: "0.3"
+
+fields:
+
+  category:
+    kind: single
+    weight: 0.20
+    hard: true
+    values: [dress, top, shirt, tshirt, knitwear, blazer, jacket, coat, trousers,
+             jeans, shorts, skirt, co_ord, jumpsuit, bikini, monokini, bralette,
+             saree, pre_draped_saree, blouse, kurta, kurti, kurta_set, anarkali,
+             lehenga, dupatta, salwar, churidar, palazzo, sharara, gharara, shrug,
+             shoes, boots, sandals, heels, bag, belt, sunglasses, jewellery, scarf, hat]
+    near:
+      - [top, tshirt, shirt]          # cut-line confusions
+      - [blazer, jacket]
+      - [jacket, coat]
+      - [trousers, jeans]
+      - [knitwear, top]
+      - [shoes, boots]
+      - [sandals, heels]
+
+  silhouette:
+    kind: single
+    weight: 0.11
+    values: [fitted, relaxed, oversized, boxy, a_line, bodycon, straight, wide_leg,
+             flared, tapered, slip, wrap, structured, draped]
+    applies_to: [dress, top, shirt, tshirt, knitwear, blazer, jacket, coat, trousers,
+                 jeans, shorts, skirt, co_ord, jumpsuit, saree, kurta, kurti, kurta_set,
+                 anarkali, lehenga, blouse, palazzo, salwar, churidar, sharara, shrug]
+    near:
+      - [relaxed, oversized, boxy]
+      - [straight, tapered]
+      - [wide_leg, flared]
+      - [fitted, bodycon]
+      - [slip, draped]
+
+  colour:
+    kind: single
+    weight: 0.10
+    # One dominant colour in v0. Multicolour attribution changes scoring and gate
+    # semantics, so it is an explicit post-golden-set decision rather than `multi`.
+    values: [black, white, ivory, cream, beige, tan, camel, brown, chocolate, grey, charcoal,
+             navy, blue, powder_blue, denim_blue, green, olive, sage, emerald,
+             red, burgundy, maroon, pink, blush, fuchsia, purple, lilac,
+             yellow, mustard, orange, rust, gold, silver, multi, print]
+    near:
+      - [black, charcoal]
+      - [navy, black]                 # the classic photo-light failure
+      - [ivory, cream, white]
+      - [beige, tan, camel, cream]
+      - [brown, chocolate, tan]
+      - [grey, charcoal]
+      - [olive, sage, green]
+      - [red, rust]
+      - [burgundy, maroon, red]
+      - [pink, blush]
+      - [blue, powder_blue, denim_blue]
+
+  pattern:
+    kind: single
+    weight: 0.05
+    values: [solid, stripe, check, floral, animal, geometric, tie_dye, colour_block,
+             paisley, logo, abstract]
+    near:
+      - [check, geometric]
+
+  surface_detail:
+    kind: multi
+    weight: 0.06
+    values: [none, embroidery, sequin, beadwork, mirrorwork, zari, lacework, applique,
+             ruched, ruffle, pleated, bow, cutout, twist, asymmetric_hem, distressed]
+    near:
+      - [embroidery, beadwork, zari]
+      - [beadwork, sequin, mirrorwork]
+
+  fit_ease:
+    kind: single
+    weight: 0.07
+    values: [bodycon, slim, regular, relaxed, loose, oversized, na]
+    applies_to: [dress, top, shirt, tshirt, knitwear, blazer, jacket, coat, trousers,
+                 jeans, shorts, skirt, co_ord, jumpsuit, saree, kurta, kurti, kurta_set,
+                 anarkali, lehenga, blouse, palazzo, salwar, churidar, sharara, shrug]
+    near:
+      - [bodycon, slim]
+      - [slim, regular]
+      - [regular, relaxed]
+      - [relaxed, loose, oversized]
+
+  fabric_look:
+    kind: single
+    weight: 0.10
+    # "look", not fibre — we read pixels, not care labels. Never claim silk.
+    values: [cotton_look, linen_look, denim, satin_look, silk_look, chiffon_look,
+             jersey, ribbed_knit, chunky_knit, wool_look, leather_look, suede_look,
+             mesh, lace, velvet, corduroy, technical, sequin]
+    near:
+      - [satin_look, silk_look]
+      - [cotton_look, linen_look]
+      - [jersey, cotton_look]
+      - [ribbed_knit, chunky_knit]
+      - [leather_look, suede_look]
+      - [chiffon_look, mesh]
+
+  neckline:
+    kind: single
+    weight: 0.06
+    applies_to: [dress, top, shirt, tshirt, knitwear, jumpsuit, co_ord, kurta, kurti, anarkali, blouse]
+    values: [crew, scoop, v_neck, deep_v, cowl, square, sweetheart, halter, boat,
+             collared, mandarin, polo, mock_neck, turtleneck, strapless, one_shoulder,
+             off_shoulder, keyhole, asymmetric, na]
+    near:
+      - [crew, scoop, boat]
+      - [v_neck, deep_v]
+      - [mock_neck, turtleneck]
+      - [collared, polo]
+
+  sleeve_length:
+    kind: single
+    weight: 0.05
+    applies_to: [dress, top, shirt, tshirt, knitwear, blazer, jacket, coat, jumpsuit, co_ord, kurta, kurti, anarkali, blouse]
+    values: [sleeveless, cap, short, elbow, three_quarter, long, extra_long, na]
+    near:
+      - [sleeveless, cap]
+      - [elbow, three_quarter]
+      - [short, elbow]
+      - [long, extra_long]
+
+  length:
+    kind: single
+    weight: 0.06
+    values: [cropped, waist, hip, tunic, mini, midi, maxi, ankle, full, na]
+    applies_to: [dress, top, shirt, tshirt, knitwear, blazer, jacket, coat, trousers,
+                 jeans, shorts, skirt, co_ord, jumpsuit, saree, kurta, kurti, kurta_set,
+                 anarkali, lehenga, blouse, palazzo, salwar, churidar, sharara, shrug]
+    near:
+      - [cropped, waist]
+      - [waist, hip]
+      - [midi, ankle]
+      - [maxi, full]
+
+  occasion:
+    kind: multi          # scored by F1 — a look can legitimately serve several
+    weight: 0.04
+    values: [everyday, work, brunch, date, party, night_out, festive, wedding_guest,
+             vacation, resort, lounge, gym, travel, formal, haldi, mehendi, sangeet,
+             wedding_ceremony, reception, festive_puja, eid, diwali, navratri_garba]
+
+  vibe:
+    kind: multi
+    weight: 0.03
+    # The editor's aesthetic taxonomy. This is the most opinionated field in the
+    # file and the one competitors cannot copy — it encodes what we think things ARE.
+    values: [minimal, classic, old_money, streetwear, y2k, grunge, goth, coquette,
+             boho, preppy, sporty, utility, romantic, edgy, retro, avant_garde,
+             indie_sleaze, clean_girl, desi_contemporary, festive_traditional]
+
+  sheerness:
+    kind: single
+    weight: 0.07
+    values: [opaque, semi_sheer, sheer, na]
+    applies_to: [dress, top, shirt, tshirt, knitwear, blazer, jacket, coat, trousers,
+                 jeans, shorts, skirt, co_ord, jumpsuit, saree, kurta, kurti, kurta_set,
+                 anarkali, lehenga, blouse, palazzo, salwar, churidar, sharara, shrug]
+    near:
+      - [opaque, semi_sheer]
+      - [semi_sheer, sheer]
+
+# Partial credit awarded when prediction and gold share a `near` group.
+near_credit: 0.5
+
+# Multi-label fields: F1 between predicted and gold sets.
+
+garment_roles:
+  # Used to align predicted garments to gold garments before field scoring.
+  # Order matters — it is the reading order of a look.
+  - outerwear
+  - top
+  - bottom
+  - onepiece
+  - footwear
+  - bag
+  - accessory

@@ -1,0 +1,198 @@
+# twin. predicate layer — v0.1
+#
+# vocab.yaml holds what the EYE can see. This file holds what people SAY.
+#
+# "Not too basic", "looks expensive", "won't crease on a flight", "office-appropriate"
+# are none of them observable attributes. They are claims about an item that decompose
+# INTO observable attributes. That decomposition is what this file stores.
+#
+# The rule that makes this an asset instead of a guess:
+#   A grounding is only `approved` when a human editor has signed it.
+#   Machine-proposed groundings sit at `proposed` and are never used in the gate.
+#
+# Each grounding is one of three kinds, and the kind determines which query lane it
+# lands in. Getting this wrong is the difference between a filter and a nudge:
+#
+#   require  -> gate lane.    ALL clauses must hold. Used for constraints.
+#   exclude  -> exclude lane. ANY clause matching disqualifies. Used for negation.
+#   prefer   -> rank lane.    Scores, never filters. Used for taste and degree.
+#
+# Clause grammar (deliberately tiny — it must compile to SQL, not to an LLM call):
+#   field in [v1, v2]        field not in [v1, v2]
+#   field == v               field != v
+#   score >= 0.6             score < 0.4          (derived numeric fields)
+#   any_of: [clause, ...]    all_of: [clause, ...]
+
+version: "0.1"
+
+# Derived numeric fields computed at ingest, referenced by clauses above.
+derived_fields:
+  distinctiveness:
+    description: >
+      1 - cosine(product_vector, centroid(category, gender)). How far this item sits
+      from the middle of its own category. Recomputed nightly as the catalog shifts,
+      so "basic" in March is not "basic" in September.
+    range: [0.0, 1.0]
+  price_percentile:
+    description: Percentile of price within (category, gender). Relative, not absolute.
+    range: [0.0, 1.0]
+
+predicates:
+
+  # ---------------------------------------------------------------------------
+  # CONSTRAINTS — these go in the gate. Failing one is a product failure,
+  # not a relevance miss.
+  # ---------------------------------------------------------------------------
+
+  not_too_revealing:
+    kind: exclude
+    status: approved
+    approved_by: editor_01
+    approved_at: "2026-08-06"
+    utterances: ["not too revealing", "nothing revealing", "modest", "covered up",
+                 "not showing too much", "decent"]
+    note: >
+      Culturally loaded and deliberately conservative. A false exclusion costs one
+      good result; a false inclusion costs the user's trust permanently. When in
+      doubt, exclude. Must be user-adjustable; this is a conservative v0 rule, not a
+      universal judgement of modesty.
+    grounding:
+      any_of:
+        - "sheerness in [semi_sheer, sheer]"
+        - "surface_detail in [cutout]"
+        - "category in [bikini, monokini, bralette]"
+        - "all_of: ['length in [mini]', 'neckline in [deep_v, strapless]']"
+
+  nothing_sheer:
+    kind: exclude
+    status: approved
+    approved_by: editor_01
+    approved_at: "2026-08-06"
+    utterances: ["nothing sheer", "not see through", "not transparent", "opaque"]
+    grounding:
+      any_of:
+        - "sheerness in [semi_sheer, sheer]"
+
+  no_crop_tops:
+    kind: exclude
+    status: approved
+    approved_by: editor_01
+    approved_at: "2026-08-06"
+    utterances: ["no crop tops", "nothing cropped", "not cropped"]
+    grounding:
+      any_of:
+        - "length == cropped"
+
+  # ---------------------------------------------------------------------------
+  # PREFERENCES — these rank. They must never filter, because they are matters
+  # of degree and a hard cut on degree produces an empty or absurd shelf.
+  # ---------------------------------------------------------------------------
+
+  not_too_basic:
+    kind: prefer
+    status: approved
+    approved_by: editor_01
+    approved_at: "2026-08-06"
+    utterances: ["not too basic", "not boring", "something different", "not plain",
+                 "stands out", "interesting", "not another basic"]
+    note: >
+      The canonical example of a negation that CANNOT be a filter. "Basic" is not a
+      property of an item; it is a position in the distribution of its own category.
+      So it inverts into positive requirements: at least one distinctive move.
+      Watch the word "too" — she wants basic-adjacent with one idea in it, not
+      costume. Over-correction into maximalism is the failure mode, and she will
+      not tell you, she will just not save anything.
+    grounding:
+      any_of:
+        - "distinctiveness >= 0.55"
+        - "neckline in [cowl, square, one_shoulder, halter, sweetheart, off_shoulder]"
+        - "surface_detail in [embroidery, beadwork, mirrorwork, zari, ruched, ruffle, pleated, bow, twist, asymmetric_hem]"
+        - "silhouette in [draped, wrap, structured, a_line]"
+        - "fabric_look in [ribbed_knit, chunky_knit, velvet, corduroy, satin_look]"
+    penalise:
+      any_of:
+        - "all_of: ['category == tshirt', 'pattern == solid', 'fabric_look == jersey']"
+        - "pattern == logo"
+
+  looks_expensive:
+    kind: prefer
+    status: approved
+    approved_by: editor_01
+    approved_at: "2026-08-06"
+    utterances: ["looks expensive", "expensive looking", "elevated", "luxe",
+                 "looks costly", "rich looking", "quiet luxury"]
+    note: >
+      Deliberately decoupled from actual price — the whole point of the request is
+      usually that she wants the look WITHOUT the price. Never ground this in
+      price_percentile.
+    grounding:
+      any_of:
+        - "silhouette in [structured, draped, straight]"
+        - "fabric_look in [wool_look, leather_look, satin_look, silk_look, suede_look]"
+        - "colour in [black, ivory, cream, beige, tan, camel, chocolate, navy, charcoal]"
+    penalise:
+      any_of:
+        - "all_of: ['pattern == logo', 'surface_detail in [none]']"
+        - "fabric_look == technical"
+
+  wont_crease:
+    kind: prefer
+    status: proposed          # machine-proposed, awaiting editor sign-off
+    proposed_by: "claude-sonnet-4-6"
+    proposed_at: "2026-08-06"
+    utterances: ["won't crease", "travel friendly", "wrinkle free", "for a flight"]
+    grounding:
+      any_of:
+        - "fabric_look in [jersey, ribbed_knit, technical, denim]"
+    penalise:
+      any_of:
+        - "fabric_look in [linen_look, cotton_look, silk_look]"
+
+  office_appropriate:
+    kind: prefer
+    status: proposed
+    proposed_by: "claude-sonnet-4-6"
+    proposed_at: "2026-08-06"
+    utterances: ["for office", "work appropriate", "formal enough", "for the office"]
+    note: >
+      NEEDS EDITOR REVIEW — Indian office norms vary enormously by city and sector.
+      A grounding signed off in Gurugram may be wrong in Chennai. Consider making
+      this user-scoped rather than global.
+    grounding:
+      all_of:
+        - "occasion in [work, formal]"
+        - "silhouette in [straight, structured, a_line]"
+    penalise:
+      any_of: ["pattern in [animal]", "surface_detail in [sequin, cutout]"]
+
+  # ---------------------------------------------------------------------------
+  # CONTEXT — occasion-shaped predicates. These usually gate softly (they narrow
+  # the pool) but are expressed as `require` because the user named them.
+  # ---------------------------------------------------------------------------
+
+  beach:
+    kind: require
+    status: approved
+    approved_by: editor_01
+    approved_at: "2026-08-06"
+    utterances: ["beach", "beachy", "for the beach", "seaside", "goa"]
+    grounding:
+      all_of:
+        - "any_of: ['occasion in [vacation, resort]', 'fabric_look in [linen_look, cotton_look, chiffon_look]']"
+
+  first_date:
+    kind: prefer
+    status: proposed
+    proposed_by: "claude-sonnet-4-6"
+    proposed_at: "2026-08-06"
+    utterances: ["first date", "date night", "for a date"]
+    note: "NEEDS EDITOR REVIEW — this is pure taste and should probably be user-scoped."
+    grounding:
+      any_of:
+        - "occasion in [date, night_out]"
+        - "silhouette in [fitted, wrap, slip]"
+
+# Gaps we know about, recorded so they are not rediscovered:
+#  - No Indian-wear predicates yet (sangeet, mehendi, temple, office-in-kurta).
+#    This is the largest hole and the editor must fill it, not a model.
+#  - `coverage` is deliberately deferred pending a calibrated real-image evaluation.

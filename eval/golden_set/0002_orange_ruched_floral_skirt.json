@@ -1,0 +1,15 @@
+{
+  "image_id": "0002_orange_ruched_floral_skirt",
+  "image": "images/0002_orange_ruched_floral_skirt.png",
+  "caption": null,
+  "tags": ["screenshot", "outdoor_night", "warm_light", "low_light", "four_garments", "accessories_present", "blind_labelled"],
+  "labelled_by": "ishan",
+  "labelled_at": "2026-08-12",
+  "review_note": "Human-reviewed, garment-intrinsic occasion and vibe labels.",
+  "garments": [
+    {"role": "top", "category": "top", "silhouette": "fitted", "colour": "orange", "pattern": "solid", "surface_detail": ["ruched"], "fit_ease": "slim", "fabric_look": "jersey", "neckline": "square", "sleeve_length": "sleeveless", "length": "cropped", "occasion": ["date", "brunch", "night_out", "vacation"], "vibe": ["romantic", "clean_girl"], "sheerness": "opaque"},
+    {"role": "bottom", "category": "skirt", "silhouette": "wrap", "colour": "cream", "pattern": "floral", "surface_detail": ["ruffle", "asymmetric_hem"], "fit_ease": "regular", "fabric_look": "chiffon_look", "length": "midi", "occasion": ["date", "party", "vacation", "brunch"], "vibe": ["romantic"], "sheerness": "opaque"},
+    {"role": "footwear", "category": "heels", "colour": "orange", "pattern": "solid", "surface_detail": ["bow"], "fabric_look": "satin_look", "occasion": ["date", "party", "night_out"], "vibe": ["romantic", "classic"]},
+    {"role": "bag", "category": "bag", "colour": "cream", "pattern": "solid", "surface_detail": ["none"], "fabric_look": "leather_look", "occasion": ["date", "party", "night_out"], "vibe": ["romantic", "classic", "minimal"]}
+  ]
+}

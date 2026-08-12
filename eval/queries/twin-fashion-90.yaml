@@ -1,0 +1,232 @@
+# TWIN-FASHION-90 — retrieval benchmark query set, v0.1
+#
+# This is a DIFFERENT gate from the decode eval. That one scores image -> attributes.
+# This one scores query -> products. Both have to pass; they fail for different reasons.
+#
+# Design rules, learned the hard way from reading Onton's benchmark:
+#  - We publish the classes we LOSE on. A benchmark you always win is a marketing
+#    asset, not an instrument.
+#  - Queries come from real user language where possible. Ones marked `source: interview`
+#    are verbatim from user research and are worth more than the ones we invented.
+#  - Every query declares which machinery it exercises, so a regression points at a file.
+#  - Scoring is per-SCREEN, not per-item. Ten correct near-identical results is a
+#    failure, because she still cannot choose.
+
+version: "0.1"
+scoring:
+  method: >
+    Three judges (different model families, to avoid correlated error) score the
+    rendered result screen, not a list of titles. Report P@10 AND set-diversity.
+    Bootstrap 10k resamples for CIs. Publish Krippendorff's alpha; if judges
+    disagree badly on a class, that class is under-specified, not the engine.
+  screen_criteria:
+    - constraint_respected   # binary. any violation zeroes the screen.
+    - would_save             # would a stylist expect this shopper to save >=1?
+    - contrast               # are there real choices here, or ten of the same thing?
+    - completeness           # for variant queries: did we show the range that exists?
+
+classes:
+
+  # ===========================================================================
+  # A. UNDER-SPECIFIED HEAD QUERIES
+  # The most common shape in commerce and the one where relevance is meaningless.
+  # Everything in the pool is "relevant". Success = surfacing the axes of variation,
+  # not returning items. Judge on facet quality, not P@10.
+  # Exercises: facet discovery, design_group clustering, editorial facet naming.
+  # ===========================================================================
+  under_specified:
+    expected_behaviour: >
+      Return a small ranked set PLUS 4-6 named facets derived from the actual pool.
+      Facets must be editorially named (predicate language), not vocabulary dumps.
+      A screen that returns 24 items and no facets FAILS this class regardless of
+      how relevant the items are.
+    queries:
+      - q: "polo shirt"
+        expect_facets: [rugby stripe, oversized boxy, old money knit, sporty technical, cropped]
+        note: >
+          The canonical case. Four thousand qualifying items, no way to choose.
+          If the facets come back as "black / white / navy" we have built a colour
+          filter and learned nothing.
+      - q: "white shirt"
+        expect_facets: [crisp poplin, oversized boyfriend, cotton casual, sheer/statement, corset detail]
+      - q: "black dress"
+        expect_facets: [slip, bodycon, midi work, party sequin, oversized shirt dress]
+      - q: "jeans"
+        expect_facets: [wide leg, straight, baggy, bootcut, skinny]
+      - q: "kurta"
+        expect_facets: [everyday cotton, festive silk, short kurti, angrakha, indo-western]
+        note: "If this returns Western-taxonomy facets, vocab.yaml is failing its market."
+      - q: "co-ord set"
+      - q: "summer tops"
+      - q: "sneakers"
+
+  # ===========================================================================
+  # B. NEGATION — vector search dies here. Symbolic exclusion or nothing.
+  # Exercises: parse_query negation spans, exclude lane, I15 (relaxation must
+  # never touch exclusions).
+  # ===========================================================================
+  negation:
+    expected_behaviour: >
+      Zero violations. A single violating item zeroes the screen. Returning six
+      honest results beats ten with one violation.
+    queries:
+      - q: "beach outfits but not too revealing"
+        must_not: [sheer, cutout, bikini, monokini]
+        traced: true
+      - q: "not another black kurta"
+        note: "Exclusion PLUS an implied 'show me the alternatives' — two mechanisms."
+      - q: "wedding guest outfit that isn't a lehenga"
+      - q: "office wear but nothing sheer"
+        must_not: [sheer, chiffon_look, mesh, lace]
+      - q: "summer dress but not floral"
+        must_not: [floral]
+      - q: "crop top but not too short"
+        note: "Negation modifying the thing she just asked for. Tests scope parsing."
+      - q: "party wear without sequins"
+        must_not: [sequinned, sequin]
+      - q: "gym clothes that aren't skin tight"
+
+  # ===========================================================================
+  # C. DEGREE — cannot be filtered. Must invert into positive requirements.
+  # Exercises: rank lane, distinctiveness, penalise clauses.
+  # ===========================================================================
+  degree:
+    expected_behaviour: >
+      Never empties the shelf. Basic items may appear but must sort below.
+      Failure mode to watch: over-correction into costume. "Too" is doing work.
+    queries:
+      - q: "white top but not too basic"
+        traced: true
+      - q: "something for work but not boring"
+      - q: "bags that look expensive but aren't"
+        note: "Verbatim from twin.shop's own examples — worth beating them on it."
+      - q: "first date outfit but not trying too hard"
+      - q: "festive but not too much"
+      - q: "minimal but still interesting"
+      - q: "trendy but not fast fashion looking"
+
+  # ===========================================================================
+  # D. PREDICATE / UNGROUNDED — the self-learning loop.
+  # These SHOULD miss on first run. Success is measured on the SECOND run,
+  # after an editor approves the proposed grounding.
+  # Exercises: propose_grounding, editor approval, materialisation at ingest.
+  # ===========================================================================
+  ungrounded:
+    expected_behaviour: >
+      Run 1: honest miss + a grounding proposal generated. Run 2 (post-approval):
+      pass. Report BOTH numbers. The delta is the flywheel, and it is the single
+      most important number in this benchmark.
+    queries:
+      - q: "something that won't crease on a flight"
+      - q: "outfit that hides a bloated stomach"
+      - q: "clothes that don't show sweat"
+      - q: "something my mother-in-law would approve of"
+        note: "Culturally loaded. Grounding must be editor-signed, likely user-scoped."
+      - q: "top that works with high waisted jeans"
+      - q: "something I can wear to office and drinks after"
+      - q: "won't look dated next year"
+
+  # ===========================================================================
+  # E. COMPLETENESS / VARIANT — the differentiation. Nobody else can do this.
+  # Exercises: design_group_id clustering, variant-axis tiers (I13).
+  # ===========================================================================
+  completeness:
+    expected_behaviour: >
+      Show the RANGE across colourways, prints, retailers and price for the same
+      design. Judge on completeness and price spread, not similarity. This is the
+      class that answers comparison paralysis, which is the actual job.
+    queries:
+      - q: "blue gingham bodysuit with red hem from Savana"
+        source: interview
+        note: "Verbatim user search string. Brand-anchored + fully specified."
+      - q: "ruched blue one shoulder midi dress from H&M"
+        source: interview
+      - q: "this dress but cheaper"
+        requires: [pasted_image]
+      - q: "same top in other colours"
+        requires: [pasted_image]
+      - q: "is this available anywhere else"
+        requires: [pasted_image]
+      - q: "cheapest version of this"
+        requires: [pasted_image]
+
+  # ===========================================================================
+  # F. INDIAN CONTEXT — the market. Currently the weakest area of vocab.yaml.
+  # Exercises: Indian-wear vocabulary, occasion predicates, cultural grounding.
+  # ===========================================================================
+  indian_context:
+    expected_behaviour: >
+      These must not fall back on Western taxonomy. If "sangeet" grounds to
+      "party", the vocabulary has failed its market.
+    queries:
+      - q: "sangeet outfit that isn't a lehenga"
+      - q: "something for mehendi, comfortable, can sit on the floor"
+      - q: "temple visit outfit"
+      - q: "kurta for office"
+      - q: "wedding guest but I'm not the bride's family"
+      - q: "Goa trip but I'll also meet his parents"
+        note: "Two conflicting contexts in one query. Genuinely hard."
+      - q: "haldi outfit that won't be ruined"
+      - q: "indo western for reception"
+      - q: "cotton kurta set for summer office"
+
+  # ===========================================================================
+  # G. PASTE / DECODE — the wedge. Image in, matches out.
+  # Exercises: full decode pipeline + retrieval.
+  # ===========================================================================
+  paste:
+    expected_behaviour: "Top-3 acceptable per decoded garment. This is the MVP ship gate."
+    queries:
+      - q: "[reel screenshot: mirror selfie, satin slip, warm light]"
+        requires: [pasted_image]
+      - q: "[flat lay, three garments]"
+        requires: [pasted_image]
+      - q: "[street style, full body, crowd behind]"
+        requires: [pasted_image]
+      - q: "[screenshot of a screenshot, compressed]"
+        requires: [pasted_image]
+      - q: "[creator reel, garment partially cropped]"
+        requires: [pasted_image]
+      - q: "[sold out product page]"
+        requires: [pasted_image]
+        note: "Must never dead-end. Google Lens handles this; we must too."
+
+  # ===========================================================================
+  # H. WE EXPECT TO LOSE — published deliberately.
+  # Functional-spec and fit queries are marketplace home turf. Onton loses the
+  # same class ("weirdly deep windowsill", 0.07 vs 0.67) and says so.
+  # ===========================================================================
+  expected_losses:
+    expected_behaviour: >
+      Lose gracefully and hand off, do not fake it. An honest "Myntra's filters
+      are better for this" costs one query and buys durable trust.
+    queries:
+      - q: "size 14 dresses that actually fit"
+      - q: "cotton kurta under 800 rupees"
+        note: "Pure filter query. Marketplace wins on price+filter UX."
+      - q: "34B bralette"
+      - q: "returnable within 7 days"
+      - q: "next day delivery dress"
+      - q: "petite length trousers 26 inseam"
+
+# ---------------------------------------------------------------------------
+# Baselines to run the same set against. Lens is the real incumbent — the one
+# user interview named it, unprompted, as the current workflow.
+# ---------------------------------------------------------------------------
+baselines:
+  - google_lens          # the actual competitor for paste queries
+  - google_search
+  - myntra_search
+  - twin_shop            # nearest direct competitor, India, same demographic
+  - meesho_image_search
+
+# ---------------------------------------------------------------------------
+# Honest notes on this instrument
+# ---------------------------------------------------------------------------
+caveats: >
+  We wrote these queries and chose the classes, which biases toward what we are
+  built for — the same critique that applies to Onton's Subtext-Decor-90. Two
+  mitigations: (1) queries marked `source: interview` are verbatim user language
+  and carry more weight; (2) the expected_losses class is scored and published.
+  Replace invented queries with interview-sourced ones as research accumulates.
+  Target: >40 of 90 sourced from real users before this benchmark is quotable.
