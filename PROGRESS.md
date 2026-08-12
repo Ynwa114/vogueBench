@@ -1,125 +1,45 @@
-# Twin — build progress and collaboration guide
+# Twin — execution runbook
 
-Last updated: 2026-08-12
+Last updated: 2026-08-12. `BUILD.md` is authoritative; this turns it into a concrete founder checklist.
 
-## Current status
+## Current state
 
-Phase 0, the decode-engine measurement layer, is implemented and its offline safety
-gates pass. We have a real-image golden-set seed: three screenshot looks, twelve
-labelled garments, spanning mirror selfie, low-light outdoor, warm-light, accessories,
-construction detail, and colour ambiguity.
+Phase 0 is built: the Python decode engine, vocabulary/predicate layer, labelling CLI,
+provider-evaluation runner, and four offline safety suites. All four suites pass.
 
-This is **not** a quality result yet. No model has been evaluated on the golden set,
-no catalog has been ingested, and no retrieval/API/iOS work has begun. The next honest
-number is the first provider evaluation after more real labels exist.
+Local golden-set seed: 3 real social/mirror screenshots and 12 labelled garments. This
+validates the schema/tooling only. It is **not** a provider-quality result. Nothing has
+yet been selected or built for production: no tagger winner, ledger, feed, ingest,
+retrieval endpoint, watches, notifications, or iOS.
 
-## What has been built
+The active bottleneck is 100 real, carefully labelled saved looks.
 
-### Decode engine
+## Rules that cannot be traded away
 
-- `decode/providers.py` exposes one vision-provider interface so model comparisons do
-  not require refactoring production logic.
-- `decode/pipeline.py` runs scene understanding first, then reads each garment against
-  the controlled vocabulary with per-field confidence, caption-only brand evidence,
-  model-call logging, and a retrieval query bridge.
-- The garment JSON response template is generated from `vocab.yaml`. This prevents a
-  field rename from silently making a model emit stale keys.
-- `decode/predicates.py` parses deterministic query fragments into three lanes:
-  gate, exclude, and rank. Negations become symbolic exclusions rather than vector
-  arithmetic. Proposed predicate groundings cannot filter until approved.
-- `decode/resolution.py` records per-fragment resolution, cache-hit telemetry, and a
-  demand-ranked predicate miss backlog.
+- `vocab.yaml` is the one editable source of truth for observable fields/values.
+- A missing value is a schema decision, not something a labeller may invent.
+- Exclusions are hard constraints; never relax them to pad a thin pool.
+- Proposed predicates cannot filter until an editor approves them.
+- Do not infer brand from pixels.
+- Golden data is real saved/social input, never clean retailer photography.
+- Raw screenshots stay outside Git. Git contains code and reviewed JSON labels only.
+- Do not start iOS until retrieval returns a shelf we would ship via `curl`.
 
-### Evaluation harness
+## What is done
 
-- `eval/score.py` separately measures garment detection F1, weighted attribute
-  accuracy, category hard failures, and high-confidence calibration.
-- `eval/run.py` runs provider comparisons and fails when no provider clears the gate.
-- `eval/label.py` supports blind and draft-corrected labelling. It now instructs
-  labellers to label occasion and vibe for each garment as a standalone product, not
-  copy outfit context onto every garment. Fields scoped away from a category are
-  skipped rather than filled with noise.
-- `eval/test_schema.py` is the migration safety net. It validates weights, near groups,
-  `applies_to`, predicate grounding references, generated decode prompt fields, golden
-  labels, and retired identifiers before the other suites run.
-- `setup.sh` provisions the local environment and runs schema, scoring, pipeline, and
-  predicate suites in that order.
+| Work | Location | Acceptance proof |
+| --- | --- | --- |
+| Provider abstraction | `decode/providers.py` | provider calls cannot leak outside adapter |
+| Two-pass decode | `decode/pipeline.py` | generated JSON template matches vocab |
+| Three-lane predicates | `decode/predicates.py` | symbolic negation and approval guard covered by tests |
+| Miss telemetry | `decode/resolution.py` | fragment-level cache/miss reporting exists |
+| Quality scorer | `eval/score.py` | detection, attributes, hard failures, calibration separated |
+| Labelling CLI | `eval/label.py` | blind and draft-correction paths available |
+| Schema guard | `eval/test_schema.py` | fields, groundings, prompt, labels, retired terms checked |
+| Golden seed | `eval/golden_set/*.json` | 3 looks / 12 garments, reviewed by Ishan |
+| GitHub | `origin/main` | initial commit `9ad5728` pushed to `Ynwa114/vogueBench` |
 
-### Current schema: v0.3
-
-`vocab.yaml` is the single human-edited source of truth. The active fields are:
-
-1. category
-2. silhouette
-3. colour
-4. pattern
-5. surface_detail
-6. fit_ease
-7. fabric_look
-8. neckline
-9. sleeve_length
-10. length
-11. occasion
-12. vibe
-13. sheerness
-
-The operational v0 visual schema is twelve structural/filter fields plus the
-editor-labelled, rank-only `vibe` layer. The distinction is deliberate: `vibe` is not
-a hard gate and must remain editorial, rather than inferred from an embedding.
-
-Notable schema decisions already made:
-
-- `pattern` and `surface_detail` are separate. A garment can be `floral` and
-  `sequin`; “nothing sequinned” is now a correct filter.
-- Construction detail lives in multi-value `surface_detail`: `ruched`, `ruffle`,
-  `pleated`, `bow`, `twist`, and `asymmetric_hem` join applied details such as
-  embroidery and zari.
-- `fit_ease` is separate from silhouette, pending a real-label redundancy review at
-  look 20.
-- `sleeve_length` is retained; `sleeve_style` and `rise` are deferred.
-- `sheerness` is `opaque | semi_sheer | sheer`, not a boolean.
-- `modesty` and garment `coverage` were retired. Constraints use inspectable
-  combinations of sheerness, surface detail, category, length, and neckline.
-- Garment-only fields are scoped through `applies_to`; bags, belts, footwear, scarves,
-  jewellery, sunglasses, hats, and dupattas do not receive invented silhouette,
-  fit/ease, length, or sheerness labels.
-- The global aesthetic layer is retained. Indian-specific depth belongs in category
-  and occasion values, not regional fields.
-
-### Predicate work completed
-
-- `not_too_revealing` now excludes semi-sheer/sheer items, cutouts, explicit revealing
-  swim/intimates categories, and a mini-plus-deep-V/strapless combination.
-- `nothing_sheer` is grounded solely on the three-level sheerness field. Opaque chiffon
-  is not incorrectly removed.
-- `not_too_basic` now has construction-detail signals as well as neckline,
-  silhouette, fabric look, and ingest-time distinctiveness.
-- Predicates are schema-validated so deleted fields and invalid values cannot silently
-  lower recall.
-
-## Golden set seed
-
-The reviewed labels live in `eval/golden_set/`:
-
-- `0001_mirror_black_offshoulder.json` — indoor mirror selfie; knit top, trousers,
-  belt, bag.
-- `0002_orange_ruched_floral_skirt.json` — outdoor/night/warm-light screenshot;
-  ruched crop top, floral ruffle skirt, heels, bag.
-- `0003_sunset_burgundy_wrap_top.json` — sunset screenshot; wrap top, mini skirt,
-  boots, bag.
-
-All are attributed to `ishan` and use garment-intrinsic occasion/vibe labels.
-
-The matching image files are intentionally ignored by Git. Real saved screenshots can
-be personal, copyrighted, or otherwise sensitive. Do not push them to a public remote.
-Store the team dataset in a private, access-controlled location and copy it locally to
-`eval/golden_set/images/` when running a live evaluation. The JSON labels reference
-the image filenames and are useful review artefacts, but a live provider run needs the
-corresponding local images.
-
-## Verification completed
-
-Run from the repository root:
+Run this after every code, schema, predicate, or label change:
 
 ```bash
 source .venv/bin/activate
@@ -127,91 +47,230 @@ python -m eval.test_schema
 python -m eval.test_score
 python -m eval.test_pipeline
 python -m eval.test_predicates
+git diff --check
 ```
 
-All four pass as of this update. `bash setup.sh` runs the same sequence.
+## Current schema and settled decisions
 
-## What has deliberately not been built
+Active fields: `category`, `silhouette`, `colour`, `pattern`, `surface_detail`,
+`fit_ease`, `fabric_look`, `neckline`, `sleeve_length`, `length`, `occasion`, `vibe`,
+`sheerness`.
 
-The authoritative build order is being followed. The following are not started:
+- The operational v0 schema is twelve structural/filter fields plus editor-labelled,
+  rank-only `vibe`. Never turn `vibe` into an auto-derived hard filter.
+- `pattern` and `surface_detail` are separate, so floral sequins are representable and
+  “nothing sequinned” works.
+- `surface_detail` includes applied and construction details: embroidery, sequin,
+  beadwork, mirrorwork, zari, lacework, applique, ruching, ruffle, pleats, bow,
+  cutout, twist, asymmetric hem, distressing.
+- `fit_ease` stays separate from `silhouette` until a look-20 co-occurrence review.
+- `sheerness` is opaque / semi-sheer / sheer. `modesty` and garment `coverage` are
+  retired.
+- `rise`, `sleeve_style`, coverage, closure, pockets, hemline, stretch, lining, and
+  warmth are deferred. They are not to be added casually.
+- Scoped fields are omitted for bags, belts, footwear, jewellery, scarves, sunglasses,
+  hats, and dupattas. Never use plausible filler attributes for accessories.
+- Indian depth belongs in category/occasion values; never create a regional field.
 
-- provider evaluation on a meaningful golden set;
-- model/tagger selection;
-- event, impression, and model-call ledger in production storage;
-- retailer integration and catalog ingest;
-- embedding, design grouping, distinctiveness, trend velocity;
-- retrieval endpoint, predicate materialisation worker, watches, notifications;
-- iOS screens.
+## Golden-set work: Ishan’s primary track
 
-Do not begin iOS work before retrieval returns results worth shipping via `curl`.
+### Goal and slice targets
 
-## Next milestones
+Reach 100 looks before using model results to select a provider. At look 10, audit the
+labelling process; at look 20, review `silhouette` × `fit_ease`; at 50–100, run the
+meaningful provider table.
 
-1. Collect and label 100 real saved looks before interpreting model scores. Include
-   mirror selfies, warm lighting, screenshots-of-screenshots, crops, crowded images,
-   and visible text overlays. At least 10% should be blind labels and 10% should have
-   a second labeller.
-2. At look 20, review the `silhouette` × `fit_ease` co-occurrence tally. Do not remove
-   the field before evidence exists.
-3. Configure a provider key and run `python -m eval.run --providers sonnet` as a smoke
-   test, then compare candidates only after the set is large enough to diagnose slices.
-4. Choose the first retailer only after the remaining user interviews resolve catalog
-   priority. This is an explicit open question in `BUILD.md`; do not make it by agent
-   inference.
-5. Build the production ledger first, then one complete retailer ingest, then live
-   retrieval. Follow the build-order table in `BUILD.md`.
+| Slice by look 100 | Minimum | Purpose |
+| --- | ---: | --- |
+| Mirror selfie | 20 | Core camera-roll behavior |
+| Warm/mixed light | 20 | Colour confidence |
+| Screenshot/overlay/compression | 20 | Social input quality |
+| Partial crop | 15 | Skip rather than guess |
+| Crowded/multiple people | 10 | Primary-subject selection |
+| Indian wear | 15 | Extension values |
+| Accessories present | 20 | Scoped-field behavior |
+| Blind labels | 10 | Prevent model-copy labels |
+| Double labels | 10 | Reveal vocabulary disagreement |
 
-## Working with a co-founder
+Slices overlap. Deliberately source the missing slices rather than collecting many
+versions of the same clean full-body photo.
 
-### Repository workflow
+### Exact labelling procedure
 
-1. Create a **private** GitHub repository. The existing local repository has no commits
-   and no configured remote, so the initial commit should be made before adding the
-   remote.
-2. Invite the co-founder with Write access. Enable branch protection on `main` once the
-   initial setup is stable: require a pull request, one approval, and passing checks.
-3. Use a short-lived branch per change: `codex/<topic>` or `feature/<topic>`. Do not
-   develop directly on `main` after the initial commit.
-4. Keep `vocab.yaml` and `predicates.yaml` editor-owned. Changes require a small PR
-   that states: values changed, predicate impact, re-labelling requirement, and the
-   full test result. This prevents vocabulary drift becoming a hidden model-quality
-   regression.
-5. Treat data separately from code. The private golden-image store should have a
-   manifest/version identifier recorded in PRs or evaluation output; do not place
-   camera-roll images in Git, issue attachments, public chat, or a public repository.
+1. Put one source image in local `inbox/` with a slug: `0021_mirror_green_kurta.png`.
+2. First image of every batch is blind:
 
-### Initial GitHub commands
+   ```bash
+   python -m eval.label --images inbox/ --blank --labeller ishan
+   ```
 
-After the initial local commit exists, create an empty private repository in GitHub,
-then run (replace the URL):
+3. Use provider drafts only when processing volume; correct every field:
+
+   ```bash
+   python -m eval.label --images inbox/ --provider sonnet --labeller ishan
+   ```
+
+4. Label every shop-worthy garment, including accessories. Ignore other people’s
+   garments. Label each garment as if it were alone on its product page; occasion/vibe
+   are not copied from the outfit.
+5. Use `na` only when a field applies but has no meaningful value. Omit fields outside
+   `applies_to`. Add slice tags and a review note for real ambiguities.
+6. Run the complete four-suite gate. Record any missing-value issue before changing the
+   schema.
+
+### Can the co-founder label too?
+
+**Yes, but as a controlled second editor—not an independent canonical-schema owner.**
+This is valuable because editor disagreement is data. Suggested allocation:
+
+- Ishan labels 60 new looks and has final editorial approval.
+- Co-founder labels 30 new looks from another source collection.
+- Co-founder blind-double-labels 10 selected Ishan looks without seeing Ishan’s JSON.
+
+Use a private shared image store outside Git, with stable matching filenames. Each person
+copies needed assets locally to `inbox/` and `eval/golden_set/images/`. Do not push the
+images; source rights and personal privacy are unresolved. Commit or PR reviewed labels
+only if both founders are comfortable sharing the annotation metadata privately.
+
+At every 10 looks, compare category, warm-light colour, opaque/semi-sheer, scoped-field,
+and silhouette/fit-ease disagreements. If two editors materially disagree, stop and
+settle the vocabulary/prompt. Do not average the labels.
+
+### Schema-change protocol
+
+Both founders may raise a gap. Neither silently changes `vocab.yaml` or an approved
+predicate.
+
+1. Save look ID, garment, intended concept, and why existing values fail.
+2. Classify it: alias, new value, predicate, deferred candidate, or true new field.
+3. A new field must be pixel-readable, non-derivable, and a hard filter. Regional needs
+  almost always become values instead.
+4. Review together; Ishan decides canonical editorial meaning.
+5. Open one small `schema/<topic>` PR stating changed schema, predicate impact,
+   re-labelling impact, and all four test results.
+6. Revisit old labels that use the concept, then merge.
+
+## Co-founder’s primary engineering track
+
+The co-founder should spend most build time on this track while contributing the planned
+labels. This is the right parallelism: the 100-look bottleneck proceeds, while the
+irreversible production foundation is prepared without prematurely building UI or a
+speculative retailer scraper.
+
+### A. Repository and CI — do first
+
+1. Clone the private repo and run `bash setup.sh`.
+2. Add GitHub Actions that installs Python and runs all four offline suites.
+3. Add branch protection to `main`: PR required, one approval, passing CI required.
+4. Add a PR template: intent, owner, schema impact, data impact, test output, and
+   re-labelling/rollback note.
+5. Verify `git status --ignored` shows images remain ignored.
+
+**Done when:** intentionally breaking a grounding or schema value fails CI, and `main`
+cannot accept an unreviewed/unverified pull request.
+
+### B. Backend skeleton — do second
+
+1. Read `BUILD.md` sections 5, 8, and 10 before selecting implementation details.
+2. Create a TypeScript service skeleton, environment validation, lint/typecheck/test
+   commands, migration mechanism, and local development instructions.
+3. Configure Supabase/Postgres development and establish auth/RLS conventions.
+4. Generate TypeScript vocabulary types from `vocab.yaml`; never hand-maintain enums.
+5. Do not build iOS, retrieval, or a public API surface yet.
+
+**Done when:** a fresh clone starts, applies migrations, and typechecks without secrets
+in Git or a second manual vocabulary copy.
+
+### C. Ledger — must precede retrieval
+
+Implement and test:
+
+1. User/action `events`.
+2. Append-only, monthly-partitioned `impressions(query_pool_id, product_id, position,
+   surface, dwell_ms, re_rank_version, pool_seed, ts)`.
+3. Model-call records: provider, model version, prompt, raw output, token use, latency,
+   cost, and decode/look linkage.
+4. Query-pool/rank-version records needed to reproduce a served shelf.
+5. Tests proving a request writes the expected trail and impressions are never updated
+   or deleted.
+
+**Done when:** each served result/model call is traceable, and the ledger design is
+ready before retrieval creates unrecapturable missing data.
+
+### D. Retailer-feed research — parallel, no premature integration
+
+For candidate retailers/feed sources, create a memo covering: allowed access, SKU count,
+variant depth, image quality, price/stock cadence, category depth, affiliate click-out,
+rate limits, usage terms, and known metadata quality. Prepare a normalised SKU adapter
+contract only.
+
+Do **not** select the first retailer until the remaining interviews settle catalog
+priority; do **not** build three partial integrations.
+
+**Done when:** there is a decision-ready memo and a documented adapter contract, not a
+scraper.
+
+### E. First retailer ingest — only after the retailer decision
+
+1. Ingest raw feed for one retailer.
+2. Normalize SKU/variant/stock/price/retailer/source/image metadata.
+3. Dedupe while retaining seller copy for audit and brand evidence only.
+4. Tag images into the approved schema plus a factual 1–2 sentence description; never
+   embed seller copy.
+5. Log feed-versus-tagger conflicts, especially category/colour/neckline/sleeve.
+6. Embed image and factual description in shared SigLIP space.
+7. Add design grouping, distinctiveness, and trend velocity.
+
+**Done when:** sample SKUs have validated attributes, embeddings, conflict logs, design
+group IDs, and an idempotent repeatable run.
+
+## Retrieval track — not before first ingest
+
+1. Implement production `QueryState`: gate, exclude, rank.
+2. Apply exclusions in SQL before ANN; expand gates only through near groups.
+3. Make thin pools relax soft/rank criteria only; exclusions never move.
+4. Derive live facets from in-stock pools; select exact/humbler/reach/wildcard slots.
+5. Store rank weights as versioned data, not code constants.
+6. Add sold-out anchors, design-group variants, and curl tests for `nothing sheer`,
+   `not black`, thin pools, sold-out cases, and unresolved fragments.
+
+**Done when:** `curl` produces a small, safe, editorially useful shelf—not just valid
+JSON. Only then does iOS begin.
+
+## Provider evaluation — after enough labels
+
+At 1–10 looks, smoke-test the pipeline only. At 50–100 labels, compare providers:
 
 ```bash
-git remote add origin git@github.com:YOUR-ORG/YOUR-PRIVATE-REPO.git
-git branch -M main
-git push -u origin main
+export ANTHROPIC_API_KEY=...
+python -m eval.run --providers sonnet --golden eval/golden_set
+python -m eval.run --providers sonnet --only mirror_selfie
+python -m eval.run --providers sonnet --only warm_light
 ```
 
-If the team prefers HTTPS, use the repository HTTPS URL instead. The remote must be
-created by an owner with the intended private visibility; that is an external-account
-decision and is not assumed by this project.
+Pass gate: attribute score ≥ 0.80; detection F1 ≥ 0.85; category hard-fail rate ≤
+0.03; calibration gap ≤ 0.15. If no model passes, inspect failure slices; never lower
+the threshold to manufacture a winner.
 
-### Suggested ownership this week
+## Branch and review process
 
-- Ishan / editor: source saved looks, define and review labels, approve vocabulary and
-  predicate changes, run user interviews.
-- Co-founder / engineering: establish private repo and data access, wire CI for the
-  four offline suites, begin ledger/ingest planning only after reading `BUILD.md`.
-- Shared: review every schema PR and track the golden-set count, blind-label count,
-  double-label count, and slice coverage.
+- `main` remains releasable.
+- Use `feature/<topic>` for engineering, `schema/<topic>` for editorial changes, and
+  `fix/<topic>` for corrections.
+- Do not mix a schema change, a backend migration, and retailer research in one PR.
+- Before PR: pull `main`, branch, make one coherent change, run the full gate if schema
+  or decode code changed, then push and request review.
+- Every PR says: what changed, why, owner, schema/data impact, tests run, and required
+  follow-up/re-labelling.
 
-## Rules that should stay visible
+## Immediate tasks this week
 
-- `BUILD.md` is authoritative over older brainstorm documents.
-- Do not put the internal codename in user-facing copy, domains, bundle IDs, or store
-  listing.
-- Never use an LLM as the synchronous retrieval query parser.
-- Never relax an exclusion to pad a thin retrieval pool.
-- Every model call and every production impression must be logged when production work
-  begins.
-- No model score is credible until it is based on real saved screenshots rather than
-  product photography.
+| Owner | Task | Done when |
+| --- | --- | --- |
+| Ishan | Label seven more deliberately diverse looks | Reach 10, all tests green |
+| Ishan | Record every missing-value/ambiguity note | Look-10 schema review has evidence |
+| Co-founder | Clone and add CI/PR protection | Four suites run on each PR |
+| Co-founder | Write retailer-feed feasibility memo | Decision inputs, no integration |
+| Co-founder | Start backend skeleton + migration plan | Fresh clone/typecheck/migration path works |
+| Both | Choose private image-store workflow | Shared filename/permissions convention exists |
+| Both | Review at looks 10 and 20 | Decide schema fixes only with data |
