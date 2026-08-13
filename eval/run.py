@@ -2,7 +2,7 @@
 The runner. This is the artefact that converts "should we use open models?" from
 a debate into a table.
 
-  python -m eval.run --providers sonnet,qwen-vl --golden eval/golden_set
+  python -m eval.run --providers sonnet,haiku,gpt56 --golden eval/golden_set
   python -m eval.run --providers sonnet --only mirror_selfie   # slice by tag
   python -m eval.run --replay runs/2026-08-06_sonnet.jsonl     # rescore, no spend
 

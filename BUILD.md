@@ -382,7 +382,7 @@ serif and the one-line read, cut anything that has opinions about her life).
 
 | component | model | notes |
 |---|---|---|
-| Foreground decode | frontier VLM (start `claude-sonnet-4-6`) | two-pass: scene → per-garment. Per-attribute confidence is load-bearing (drives disambiguation chips, honesty state, cascade routing). |
+| Foreground decode | frontier VLM via OpenRouter (start `anthropic/claude-sonnet-5`) | two-pass: scene → per-garment. Per-attribute confidence is load-bearing (drives disambiguation chips, honesty state, cascade routing). |
 | Backlog decode | cheap tier, chosen by eval table | quality floor is an open question (§11) |
 | Catalog tagger | cheapest model clearing the gate | highest volume, ~$600–900 one-time for 400K SKUs |
 | Embeddings | SigLIP, shared image+text space | ~$80 one-time. Small > large (§4.1). |

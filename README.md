@@ -27,10 +27,10 @@ eval/test_*.py          offline tests — no keys, no spend
 python -m eval.test_score      # the scorer is trustworthy
 python -m eval.test_pipeline   # the wiring is trustworthy
 python -m eval.label --images inbox/ --provider sonnet --labeller editor_01
-python -m eval.run --providers sonnet,qwen-vl,llama-v
+python -m eval.run --providers sonnet,haiku,gpt56,qwen-vl,llama-v
 ```
 
-Needs `pyyaml`; `anthropic` / `openai` only for live runs.
+Needs `pyyaml`; `openai` only for live runs through OpenRouter.
 
 ## What gets measured, and why three numbers instead of one
 

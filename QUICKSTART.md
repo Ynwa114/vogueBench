@@ -31,8 +31,8 @@ anything else — the scorer being correct is load-bearing for every decision do
 ## 3. Add a key
 
 ```bash
-export ANTHROPIC_API_KEY=sk-ant-...
-echo 'export ANTHROPIC_API_KEY=sk-ant-...' >> ~/.zshrc     # persist it
+export OPENROUTER_API_KEY=sk-or-v1-...
+echo 'export OPENROUTER_API_KEY=sk-or-v1-...' >> ~/.zshrc  # persist it
 ```
 
 Only needed for live runs. The tests never call out.

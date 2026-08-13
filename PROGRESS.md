@@ -242,7 +242,7 @@ JSON. Only then does iOS begin.
 At 1–10 looks, smoke-test the pipeline only. At 50–100 labels, compare providers:
 
 ```bash
-export ANTHROPIC_API_KEY=...
+export OPENROUTER_API_KEY=...
 python -m eval.run --providers sonnet --golden eval/golden_set
 python -m eval.run --providers sonnet --only mirror_selfie
 python -m eval.run --providers sonnet --only warm_light

@@ -3,7 +3,7 @@ One interface. Every model in twin. sits behind this and nothing else.
 
 This is the load-bearing file of the model-independence roadmap: the day an open
 8B clears the golden set, swapping it is a config change, not a refactor. Any
-code that imports `anthropic` or `openai` outside this module is a bug.
+code that imports an API SDK outside this module is a bug.
 
 No network calls happen at import time. Adapters are lazy so the eval harness can
 run with the mock provider on a laptop with no keys.
@@ -68,47 +68,6 @@ def _media_type(b: bytes) -> str:
     return "image/jpeg"
 
 
-# --------------------------------------------------------------------------- #
-# Adapters
-# --------------------------------------------------------------------------- #
-
-class AnthropicVision:
-    """Frontier tier. The v0 decode runs here until the eval says otherwise."""
-
-    def __init__(self, model: str = "claude-sonnet-4-6",
-                 price_in: float = 3.0, price_out: float = 15.0):
-        self.name = f"anthropic:{model}"
-        self.model = model
-        self.price_in = price_in
-        self.price_out = price_out
-        self._client = None
-
-    def _c(self):
-        if self._client is None:
-            import anthropic  # lazy
-            self._client = anthropic.Anthropic(api_key=os.environ["ANTHROPIC_API_KEY"])
-        return self._client
-
-    def see(self, images, prompt, system="", max_tokens=1500) -> VisionResponse:
-        content = [{"type": "image",
-                    "source": {"type": "base64",
-                               "media_type": _media_type(im),
-                               "data": _b64(im)}} for im in images]
-        content.append({"type": "text", "text": prompt})
-        t0 = time.time()
-        r = self._c().messages.create(
-            model=self.model, max_tokens=max_tokens, system=system or "",
-            messages=[{"role": "user", "content": content}],
-        )
-        return VisionResponse(
-            text="".join(b.text for b in r.content if b.type == "text"),
-            model=self.model,
-            input_tokens=r.usage.input_tokens,
-            output_tokens=r.usage.output_tokens,
-            latency_ms=int((time.time() - t0) * 1000),
-        )
-
-
 class OpenAICompatVision:
     """
     Covers everything that speaks the OpenAI chat-completions shape: Fireworks,
@@ -118,20 +77,23 @@ class OpenAICompatVision:
     """
 
     def __init__(self, model: str, base_url: str, api_key_env: str,
-                 price_in: float = 0.0, price_out: float = 0.0, name: str | None = None):
+                 price_in: float = 0.0, price_out: float = 0.0, name: str | None = None,
+                 default_headers: dict[str, str] | None = None):
         self.name = name or f"{base_url.split('//')[-1].split('/')[0]}:{model}"
         self.model = model
         self.base_url = base_url
         self.api_key_env = api_key_env
         self.price_in = price_in
         self.price_out = price_out
+        self.default_headers = default_headers or {}
         self._client = None
 
     def _c(self):
         if self._client is None:
             from openai import OpenAI  # lazy
             self._client = OpenAI(base_url=self.base_url,
-                                  api_key=os.environ[self.api_key_env])
+                                  api_key=os.environ[self.api_key_env],
+                                  default_headers=self.default_headers)
         return self._client
 
     def see(self, images, prompt, system="", max_tokens=1500) -> VisionResponse:
@@ -181,22 +143,26 @@ class MockVision:
 # --------------------------------------------------------------------------- #
 
 def registry() -> dict[str, Any]:
-    fw = "https://api.fireworks.ai/inference/v1"
-    tg = "https://api.together.xyz/v1"
+    orv = lambda model, pin, pout: OpenAICompatVision(
+        model, "https://openrouter.ai/api/v1", "OPENROUTER_API_KEY", pin, pout,
+        name=f"openrouter:{model}",
+        default_headers={"HTTP-Referer": "https://github.com/Ynwa114/vogueBench",
+                         "X-Title": "vogueBench"},
+    )
     return {
-        # frontier — current production decode
-        "sonnet":   lambda: AnthropicVision("claude-sonnet-4-6", 3.0, 15.0),
-        "haiku":    lambda: AnthropicVision("claude-haiku-4-5-20251001", 1.0, 5.0),
+        # Frontier aliases deliberately remain short for label/eval commands, but
+        # every live request routes through OpenRouter and one credential source.
+        "sonnet":    lambda: orv("anthropic/claude-sonnet-5", 2.0, 10.0),
+        "haiku":     lambda: orv("anthropic/claude-haiku-4.5", 1.0, 5.0),
+        "gpt56":     lambda: orv("openai/gpt-5.6-terra", 1.0, 6.0),
         # open weights — candidates for the tagger first, the decode later
-        "qwen-vl":  lambda: OpenAICompatVision(
-            "accounts/fireworks/models/qwen2p5-vl-72b-instruct", fw,
-            "FIREWORKS_API_KEY", 0.9, 0.9, name="fireworks:qwen2.5-vl-72b"),
-        "llama-v":  lambda: OpenAICompatVision(
-            "meta-llama/Llama-4-Scout-17B-16E-Instruct", tg,
-            "TOGETHER_API_KEY", 0.18, 0.59, name="together:llama-4-scout"),
-        "internvl": lambda: OpenAICompatVision(
-            "OpenGVLab/InternVL3-38B", tg, "TOGETHER_API_KEY", 0.35, 0.35,
-            name="together:internvl3-38b"),
+        "qwen-vl":  lambda: orv("qwen/qwen2.5-vl-72b-instruct", 0.25, 0.75),
+        "llama-v":  lambda: orv("meta-llama/llama-4-scout", 0.10, 0.30),
+        # OpenRouter prices verified 2026-08-14. Update with an eval note if routed
+        # pricing changes, because these values drive the cost column.
+        "or-gemini":  lambda: orv("google/gemini-2.5-flash", 0.3, 2.5),
+        "or-qwen-vl": lambda: orv("qwen/qwen2.5-vl-72b-instruct", 0.25, 0.75),
+        "or-llama-v": lambda: orv("meta-llama/llama-4-scout", 0.10, 0.30),
     }
 
 

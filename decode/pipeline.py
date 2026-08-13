@@ -347,7 +347,8 @@ class DecodeEngine:
                 if cell is None:
                     continue
                 raw = cell.get("value") if isinstance(cell, dict) else cell
-                conf = float(cell.get("confidence", 0.5)) if isinstance(cell, dict) else 0.5
+                raw_conf = cell.get("confidence") if isinstance(cell, dict) else None
+                conf = float(raw_conf) if isinstance(raw_conf, (int, float)) else 0.5
                 val, clean = coerce(self.vocab, fname, raw)
                 if val is None or val == []:
                     continue

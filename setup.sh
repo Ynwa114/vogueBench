@@ -38,7 +38,7 @@ Activate in future sessions:
 
 Next:
   1. Drop 100 outfit screenshots into ./inbox/
-  2. export ANTHROPIC_API_KEY=sk-...
+  2. export OPENROUTER_API_KEY=sk-or-v1-...
   3. python -m eval.label --images inbox/ --provider sonnet --labeller editor_01
   4. python -m eval.run --providers sonnet,haiku
 
