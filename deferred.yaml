@@ -11,8 +11,26 @@ candidates:
     decision_rule: "Revisit after at least three independently labelled occurrences."
   - field: fabric_look
     candidate: "technical definition or a structured_woven/crepe_look value"
-    status: observe
+    status: resolved
     evidence:
       - source: editor_review_2026-08-13
         observation: "technical has been used as a catch-all for uncertain structured woven garments on two looks."
-    decision_rule: "Revisit at the third occurrence; decide whether this is a prompt-definition problem or a missing visible look."
+    decision: "Third occurrence on pleated mini skirts confirmed a missing visible fabric look; crepe_look added to vocab.yaml."
+  - field: category
+    candidate_values: [gloves, socks, tights]
+    status: observe
+    evidence:
+      - image_id: 0022_black_lace_trim_mini_fur_coat
+        observation: "Prominent black lace gloves."
+      - image_id: 0019_black_off_shoulder_top_grey_boots
+        observation: "Knee-high socks are a deliberate styling element over boots."
+      - image_id: 0020_black_knit_pleated_skirt_boots
+        observation: "Knee-high socks are a deliberate styling element over boots."
+    decision_rule: "Do not add hosiery/accessory categories until repeated across more independent looks and confirmed as a shoppable retrieval need."
+  - field: category_and_occasion
+    candidate: "Indian-wear category and occasion values"
+    status: unvalidated
+    evidence:
+      - source: current_golden_sets
+        observation: "No Indian-wear looks have yet exercised the existing India-specific category or occasion values."
+    decision_rule: "Add India-distribution label coverage before changing values; current user collection is deliberately out of scope."

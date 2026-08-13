@@ -106,6 +106,9 @@ def main() -> int:
         market = entry.get("market")
         check(f"{path.name}: market text when supplied",
               market is None or (isinstance(market, str) and market.strip()), "invalid market")
+        check(f"{path.name}: distribution valid when supplied",
+              entry.get("distribution") is None or entry.get("distribution") in {"product_page", "inspiration"},
+              "invalid distribution")
         ocr = entry.get("ocr")
         if ocr is not None:
             valid_keys = {"brand", "product_title", "price", "source_domain", "evidence"}

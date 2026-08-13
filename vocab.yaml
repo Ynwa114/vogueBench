@@ -84,7 +84,7 @@ fields:
     kind: multi
     weight: 0.06
     values: [none, embroidery, sequin, beadwork, mirrorwork, zari, lacework, applique,
-             ruched, ruffle, pleated, bow, cutout, twist, asymmetric_hem, distressed]
+             ruched, ruffle, pleated, quilted, bow, cutout, twist, asymmetric_hem, distressed]
     near:
       - [embroidery, beadwork, zari]
       - [beadwork, sequin, mirrorwork]
@@ -108,7 +108,7 @@ fields:
     # "look", not fibre — we read pixels, not care labels. Never claim silk.
     values: [cotton_look, linen_look, denim, satin_look, silk_look, chiffon_look,
              jersey, ribbed_knit, chunky_knit, wool_look, leather_look, suede_look,
-             mesh, lace, velvet, corduroy, technical, sequin]
+             mesh, lace, velvet, corduroy, technical, crepe_look, fur_look, sequin]
     near:
       - [satin_look, silk_look]
       - [cotton_look, linen_look]
@@ -116,6 +116,8 @@ fields:
       - [ribbed_knit, chunky_knit]
       - [leather_look, suede_look]
       - [chiffon_look, mesh]
+      - [crepe_look, technical]
+      - [fur_look, wool_look]
 
   neckline:
     kind: single

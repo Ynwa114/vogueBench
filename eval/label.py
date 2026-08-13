@@ -8,7 +8,7 @@ labelling by CORRECTING a model's read is roughly 4x faster and produces exactly
 the correction pairs the post-training dataset needs later. So this tool
 pre-fills with a decode and asks the editor to fix it.
 
-  python -m eval.label --images inbox/ --provider sonnet --labeller editor_01 --market in
+  python -m eval.label --images inbox/ --provider sonnet --labeller editor_01 --market in --distribution inspiration
   python -m eval.label --images inbox/ --blank          # no pre-fill, cold labelling
 
 Discipline that makes the set worth having:
@@ -102,6 +102,8 @@ def main():
     ap.add_argument("--blank", action="store_true", help="never pre-fill")
     ap.add_argument("--labeller", default="editor_01")
     ap.add_argument("--market", required=True, help="catalog market for this label set, e.g. in or us")
+    ap.add_argument("--distribution", required=True, choices=["product_page", "inspiration"],
+                    help="product screenshot for OCR/exact match, or inspiration look for scene decomposition")
     ap.add_argument("--blind-every", type=int, default=10)
     args = ap.parse_args()
 
@@ -171,7 +173,7 @@ def main():
             continue
 
         rec = {"image_id": iid, "image": f"images/{img.name}", "caption": caption,
-               "market": args.market, "ocr": ocr,
+               "market": args.market, "distribution": args.distribution, "ocr": ocr,
                "tags": tags + (["blind_labelled"] if blind else ["draft_corrected"]),
                "labelled_by": args.labeller, "labelled_at": str(date.today()),
                "garments": garments}

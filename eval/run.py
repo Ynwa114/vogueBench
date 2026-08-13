@@ -28,7 +28,8 @@ from decode.pipeline import DecodeEngine, coerce, load_vocab   # noqa: E402
 from eval.score import LookResult, score_look, summarise, RunSummary  # noqa: E402
 
 
-def load_golden(d: Path, only_tag: str | None = None) -> list[dict]:
+def load_golden(d: Path, only_tag: str | None = None,
+                distribution: str | None = None) -> list[dict]:
     items = []
     vocab = load_vocab()
     for f in sorted(d.glob("*.json")):
@@ -44,6 +45,8 @@ def load_golden(d: Path, only_tag: str | None = None) -> list[dict]:
                 if clean:
                     garment[name] = value
         if only_tag and only_tag not in g.get("tags", []):
+            continue
+        if distribution and g.get("distribution") != distribution:
             continue
         img = d / g["image"]
         if not img.exists():
@@ -133,12 +136,14 @@ def main():
     ap.add_argument("--providers", default="sonnet")
     ap.add_argument("--golden", default=str(ROOT / "eval" / "golden_set"))
     ap.add_argument("--only", default=None, help="filter golden set by tag")
+    ap.add_argument("--distribution", choices=["product_page", "inspiration"], default=None,
+                    help="filter golden set by source distribution")
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--out", default=None)
     args = ap.parse_args()
 
     vocab = load_vocab()
-    golden = load_golden(Path(args.golden), args.only)
+    golden = load_golden(Path(args.golden), args.only, args.distribution)
     if not golden:
         sys.exit("no golden items found")
     print(f"golden set: {len(golden)} looks, "
