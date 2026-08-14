@@ -1,0 +1,13 @@
+{
+  "image_id": "0013_grey_off_shoulder_crop_top",
+  "image": "images/0013_grey_off_shoulder_crop_top.jpeg",
+  "caption": "Tabadtod grey off-shoulder crop-top product-page screenshot.",
+  "market": "us",
+  "distribution": "product_page",
+  "ocr": {"brand": "TABADTOD", "product_title": "Off-Shoulder Crop Top", "price": "₹699", "source_domain": "www.myntra.com", "evidence": ["TABADTOD", "Off-Shoulder Crop Top", "₹699", "www.myntra.com"]},
+  "tags": ["product_page", "screenshot", "clean_product_photo", "single_garment", "partial_outfit", "draft_labelled"],
+  "labelled_by": "ishan",
+  "labelled_at": "2026-08-13",
+  "review_note": "Human-reviewed; the styling makes the top read oversized despite a cinched cropped hem; oversized/relaxed is the most useful current split.",
+  "garments": [{"role": "top", "category": "top", "silhouette": "oversized", "colour": "grey", "pattern": "solid", "surface_detail": ["none"], "fit_ease": "relaxed", "fabric_look": "jersey", "neckline": "off_shoulder", "sleeve_length": "short", "length": "cropped", "occasion": ["brunch", "date", "vacation"], "vibe": ["clean_girl", "y2k"], "sheerness": "opaque"}]
+}

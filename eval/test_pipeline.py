@@ -1,11 +1,14 @@
 """Offline regression checks for controlled-vocabulary decoding."""
 
 import json
+import tempfile
 import unittest
+from pathlib import Path
 
 from decode.pipeline import (Decode, DecodeEngine, Garment, coerce, extract_ocr,
                              garment_prompt, load_vocab, mine_caption, to_query)
-from decode.providers import MockVision, registry
+from decode.providers import MockVision, VisionResponse, registry
+from eval.run import RateLimitedVision, load_golden
 
 
 class PipelineTests(unittest.TestCase):
@@ -60,6 +63,7 @@ class PipelineTests(unittest.TestCase):
         engine = DecodeEngine(MockVision({"0": json.dumps(scene), "1": json.dumps(garment)}), self.vocab)
         decoded = engine.decode(b"not-an-image")
         self.assertEqual(decoded.garments[0].attrs["category"].confidence, 0.5)
+        self.assertEqual((decoded.confidence_cells, decoded.null_confidence_cells), (1, 1))
 
     def test_query_bridge_omits_solid_pattern(self):
         garment = Garment("top")
@@ -82,6 +86,27 @@ class PipelineTests(unittest.TestCase):
             self.assertEqual((provider.price_in, provider.price_out), (price_in, price_out))
             self.assertEqual(provider.api_key_env, "OPENROUTER_API_KEY")
             self.assertEqual(provider.default_headers["X-Title"], "vogueBench")
+
+    def test_rate_limiter_preserves_provider_response(self):
+        class Provider:
+            name = "test"
+            model = "test"
+
+            def see(self, *args, **kwargs):
+                return VisionResponse(text="{}", model=self.model)
+
+        response = RateLimitedVision(Provider(), rpm=60).see([], "prompt")
+        self.assertEqual(response.json(), {})
+
+    def test_only_accepts_distribution_values(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            (root / "look.png").write_bytes(b"image")
+            (root / "look.json").write_text(json.dumps({
+                "image_id": "look", "image": "look.png", "distribution": "inspiration",
+                "tags": ["screenshot"], "garments": [],
+            }))
+            self.assertEqual(len(load_golden(root, only_tag="inspiration")), 1)
 
 
 if __name__ == "__main__":

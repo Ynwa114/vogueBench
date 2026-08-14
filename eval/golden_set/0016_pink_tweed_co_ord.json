@@ -1,0 +1,18 @@
+{
+  "image_id": "0016_pink_tweed_co_ord",
+  "image": "images/0016_pink_tweed_co_ord.jpeg",
+  "caption": null,
+  "market": "us",
+  "distribution": "inspiration",
+  "ocr": {"brand": null, "product_title": null, "price": null, "source_domain": null, "evidence": []},
+  "tags": ["pinterest", "screenshot", "street_photo", "partial_crop", "co_ord", "accessories_present", "draft_labelled"],
+  "labelled_by": "ishan",
+  "labelled_at": "2026-08-14",
+  "review_note": "Draft only; jacket and skirt are retained separately because retrieval is garment-level. The woven texture is not a current fabric_look value; wool_look is the closest visible read.",
+  "garments": [
+    {"role":"outerwear","category":"jacket","silhouette":"structured","colour":"blush","pattern":"check","surface_detail":["none"],"fit_ease":"regular","fabric_look":"wool_look","sleeve_length":"long","length":"waist","occasion":["date","brunch","formal"],"vibe":["classic","coquette","old_money"],"sheerness":"opaque"},
+    {"role":"bottom","category":"skirt","silhouette":"straight","colour":"blush","pattern":"check","surface_detail":["none"],"fit_ease":"regular","fabric_look":"wool_look","length":"mini","occasion":["date","brunch","formal"],"vibe":["classic","coquette","old_money"],"sheerness":"opaque"},
+    {"role":"bag","category":"bag","colour":"ivory","pattern":"solid","surface_detail":["none"],"fabric_look":"leather_look","occasion":["date","brunch","formal"],"vibe":["classic","old_money"]},
+    {"role":"accessory","category":"jewellery","colour":"ivory","pattern":"solid","surface_detail":["none"],"occasion":["date","brunch","formal"],"vibe":["classic","coquette"]}
+  ]
+}

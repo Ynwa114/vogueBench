@@ -1,0 +1,22 @@
+{
+  "image_id": "0015_leopard_top_brown_leather_jacket",
+  "image": "images/0015_leopard_top_brown_leather_jacket.jpeg",
+  "caption": null,
+  "market": "us",
+  "distribution": "inspiration",
+  "ocr": {"brand": null, "product_title": null, "price": null, "source_domain": null, "evidence": []},
+  "tags": ["pinterest", "screenshot", "outfit_collage", "flat_lay", "many_garments", "accessories_present", "draft_labelled"],
+  "labelled_by": "ishan",
+  "labelled_at": "2026-08-14",
+  "review_note": "Draft only; collage contains many individual accessories. Hair clip and headband are not taggable categories, so they are deliberately omitted.",
+  "garments": [
+    {"role":"outerwear","category":"jacket","silhouette":"oversized","colour":"brown","pattern":"solid","surface_detail":["none"],"fit_ease":"oversized","fabric_look":"leather_look","sleeve_length":"long","length":"hip","occasion":["everyday","date"],"vibe":["retro","edgy"],"sheerness":"opaque"},
+    {"role":"top","category":"top","silhouette":"fitted","colour":"brown","pattern":"animal","surface_detail":["bow"],"fit_ease":"slim","fabric_look":"mesh","neckline":"halter","sleeve_length":"sleeveless","length":"waist","occasion":["date","night_out"],"vibe":["y2k","indie_sleaze"],"sheerness":"semi_sheer"},
+    {"role":"bottom","category":"jeans","silhouette":"wide_leg","colour":"denim_blue","pattern":"solid","surface_detail":["distressed"],"fit_ease":"regular","fabric_look":"denim","length":"full","occasion":["everyday","date"],"vibe":["retro","streetwear"],"sheerness":"opaque"},
+    {"role":"footwear","category":"shoes","colour":"brown","pattern":"colour_block","surface_detail":["none"],"fabric_look":"suede_look","occasion":["everyday","date"],"vibe":["retro","streetwear"]},
+    {"role":"bag","category":"bag","colour":"brown","pattern":"solid","surface_detail":["none"],"fabric_look":"leather_look","occasion":["everyday","date"],"vibe":["retro","classic"]},
+    {"role":"accessory","category":"sunglasses","colour":"black","pattern":"solid","surface_detail":["none"],"occasion":["everyday","date"],"vibe":["retro","y2k"]},
+    {"role":"accessory","category":"jewellery","colour":"gold","pattern":"solid","surface_detail":["none"],"occasion":["date","night_out"],"vibe":["boho","retro"]},
+    {"role":"accessory","category":"belt","colour":"gold","pattern":"solid","surface_detail":["none"],"occasion":["date","night_out"],"vibe":["boho","retro"]}
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "image_id": "0004_red_bandana_skater_dress",
+  "image": "images/0004_red_bandana_skater_dress.jpeg",
+  "caption": "Darzi Women Skater Multicolor Dress product-page screenshot.",
+  "market": "us",
+  "distribution": "product_page",
+  "ocr": {"brand": "DARZI", "product_title": "Women Skater Multicolor Dress", "price": "₹449", "source_domain": null, "evidence": ["DARZI", "Women Skater Multicolor Dress", "₹449"]},
+  "tags": ["product_page", "screenshot", "clean_product_photo", "single_garment", "draft_labelled"],
+  "labelled_by": "ishan",
+  "labelled_at": "2026-08-13",
+  "review_note": "Human-reviewed; pixel read is a red paisley/bandana-print dress with a square neck, shirred bodice, and puff sleeves. The retailer title's 'multicolor' wording is retained only as OCR evidence.",
+  "attribute_conflicts": [{"field": "colour", "pixel_value": "red", "external_value": "multicolor", "external_source": "ocr.product_title", "resolution": "pixel_read_wins"}],
+  "garments": [
+    {"role": "onepiece", "category": "dress", "silhouette": "a_line", "colour": "red", "pattern": "paisley", "surface_detail": ["ruched"], "fit_ease": "slim", "fabric_look": "cotton_look", "neckline": "square", "sleeve_length": "short", "length": "mini", "occasion": ["brunch", "date", "vacation"], "vibe": ["romantic", "boho"], "sheerness": "opaque"},
+    {"role": "accessory", "category": "sunglasses", "colour": "white", "pattern": "solid", "surface_detail": ["none"], "occasion": ["brunch", "vacation"], "vibe": ["retro", "boho"]},
+    {"role": "accessory", "category": "jewellery", "colour": "gold", "pattern": "solid", "surface_detail": ["none"], "occasion": ["brunch", "date", "vacation"], "vibe": ["classic", "boho"]}
+  ]
+}

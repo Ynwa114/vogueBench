@@ -93,7 +93,8 @@ class OpenAICompatVision:
             from openai import OpenAI  # lazy
             self._client = OpenAI(base_url=self.base_url,
                                   api_key=os.environ[self.api_key_env],
-                                  default_headers=self.default_headers)
+                                  default_headers=self.default_headers,
+                                  timeout=90.0)
         return self._client
 
     def see(self, images, prompt, system="", max_tokens=1500) -> VisionResponse:

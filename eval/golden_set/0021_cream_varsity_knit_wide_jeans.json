@@ -1,0 +1,18 @@
+{
+  "image_id": "0021_cream_varsity_knit_wide_jeans",
+  "image": "images/0021_cream_varsity_knit_wide_jeans.jpeg",
+  "caption": null,
+  "market": "us",
+  "distribution": "inspiration",
+  "ocr": {"brand": null, "product_title": null, "price": null, "source_domain": null, "evidence": []},
+  "tags": ["pinterest", "screenshot", "mirror_selfie", "indoor_warm_light", "four_garments", "accessories_present", "draft_labelled"],
+  "labelled_by": "ishan",
+  "labelled_at": "2026-08-14",
+  "review_note": "Draft only; the varsity number/logo is a visible logo pattern. The off-shoulder neckline is intentional styling rather than a separate field gap.",
+  "garments": [
+    {"role":"top","category":"knitwear","silhouette":"oversized","colour":"cream","pattern":"logo","surface_detail":["none"],"fit_ease":"oversized","fabric_look":"chunky_knit","neckline":"off_shoulder","sleeve_length":"long","length":"hip","occasion":["everyday","brunch","travel"],"vibe":["preppy","y2k"],"sheerness":"opaque"},
+    {"role":"bottom","category":"jeans","silhouette":"wide_leg","colour":"denim_blue","pattern":"solid","surface_detail":["none"],"fit_ease":"relaxed","fabric_look":"denim","length":"full","occasion":["everyday","brunch","travel"],"vibe":["streetwear","y2k"],"sheerness":"opaque"},
+    {"role":"footwear","category":"shoes","colour":"silver","pattern":"solid","surface_detail":["none"],"fabric_look":"leather_look","occasion":["everyday","brunch","travel"],"vibe":["sporty","y2k"]},
+    {"role":"bag","category":"bag","colour":"red","pattern":"solid","surface_detail":["none"],"fabric_look":"leather_look","occasion":["everyday","brunch","travel"],"vibe":["y2k","classic"]}
+  ]
+}

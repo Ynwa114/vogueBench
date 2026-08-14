@@ -1,0 +1,20 @@
+{
+  "image_id": "0019_black_off_shoulder_top_grey_boots",
+  "image": "images/0019_black_off_shoulder_top_grey_boots.jpeg",
+  "caption": null,
+  "market": "us",
+  "distribution": "inspiration",
+  "ocr": {"brand": null, "product_title": null, "price": null, "source_domain": null, "evidence": []},
+  "tags": ["pinterest", "screenshot", "mirror_selfie", "indoor_warm_light", "layered_outfit", "accessories_present", "draft_labelled"],
+  "labelled_by": "ishan",
+  "labelled_at": "2026-08-14",
+  "review_note": "Draft only; the dark top and grey knit outer layer overlap, so exact garment boundary/neckline is moderately uncertain. Belt has prominent grommets, not expressible in current surface_detail.",
+  "garments": [
+    {"role":"outerwear","category":"knitwear","silhouette":"relaxed","colour":"grey","pattern":"solid","surface_detail":["none"],"fit_ease":"loose","fabric_look":"chunky_knit","neckline":"off_shoulder","sleeve_length":"long","length":"hip","occasion":["everyday","night_out"],"vibe":["indie_sleaze","grunge"],"sheerness":"opaque"},
+    {"role":"top","category":"top","silhouette":"fitted","colour":"black","pattern":"solid","surface_detail":["none"],"fit_ease":"slim","fabric_look":"jersey","neckline":"off_shoulder","sleeve_length":"sleeveless","length":"waist","occasion":["night_out"],"vibe":["edgy","indie_sleaze"],"sheerness":"opaque"},
+    {"role":"bottom","category":"skirt","silhouette":"flared","colour":"black","pattern":"solid","surface_detail":["none"],"fit_ease":"regular","fabric_look":"crepe_look","length":"mini","occasion":["night_out"],"vibe":["edgy","indie_sleaze"],"sheerness":"opaque"},
+    {"role":"footwear","category":"boots","colour":"grey","pattern":"solid","surface_detail":["none"],"fabric_look":"suede_look","occasion":["everyday","night_out"],"vibe":["grunge","indie_sleaze"]},
+    {"role":"accessory","category":"belt","colour":"black","pattern":"solid","surface_detail":["none"],"fabric_look":"leather_look","occasion":["night_out"],"vibe":["edgy","grunge"]},
+    {"role":"accessory","category":"sunglasses","colour":"black","pattern":"solid","surface_detail":["none"],"occasion":["everyday","night_out"],"vibe":["edgy","y2k"]}
+  ]
+}

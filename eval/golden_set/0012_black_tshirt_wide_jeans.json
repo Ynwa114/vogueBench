@@ -1,0 +1,17 @@
+{
+  "image_id": "0012_black_tshirt_wide_jeans",
+  "image": "images/0012_black_tshirt_wide_jeans.jpeg",
+  "caption": "Levi's black T-shirt with light-blue wide-leg jeans and black boots product-page screenshot.",
+  "market": "us",
+  "distribution": "product_page",
+  "ocr": {"brand": "Levi's", "product_title": "Women's Blue Mile High Wide Leg Fit High Rise Jeans", "price": null, "source_domain": "levi.in", "evidence": ["levi.in", "Women's Blue Mile High Wide Leg Fit High Rise Jeans"]},
+  "tags": ["product_page", "screenshot", "clean_product_photo", "three_garments", "draft_labelled"],
+  "labelled_by": "ishan",
+  "labelled_at": "2026-08-13",
+  "review_note": "Human-reviewed; the retailer title says high rise but rise is deliberately deferred and is not inferred into this schema.",
+  "garments": [
+    {"role": "top", "category": "tshirt", "silhouette": "boxy", "colour": "black", "pattern": "solid", "surface_detail": ["none"], "fit_ease": "relaxed", "fabric_look": "cotton_look", "neckline": "crew", "sleeve_length": "short", "length": "waist", "occasion": ["everyday", "travel"], "vibe": ["minimal", "streetwear"], "sheerness": "opaque"},
+    {"role": "bottom", "category": "jeans", "silhouette": "wide_leg", "colour": "denim_blue", "pattern": "solid", "surface_detail": ["none"], "fit_ease": "regular", "fabric_look": "denim", "length": "full", "occasion": ["everyday", "travel"], "vibe": ["classic", "streetwear"], "sheerness": "opaque"},
+    {"role": "footwear", "category": "boots", "colour": "black", "pattern": "solid", "surface_detail": ["none"], "fabric_look": "leather_look", "occasion": ["everyday", "date"], "vibe": ["classic", "edgy"]}
+  ]
+}

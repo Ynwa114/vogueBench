@@ -1,0 +1,19 @@
+{
+  "image_id": "0020_black_knit_pleated_skirt_boots",
+  "image": "images/0020_black_knit_pleated_skirt_boots.jpeg",
+  "caption": "25 Best Black Skirt Fall Outfits for Every Occasion",
+  "market": "us",
+  "distribution": "inspiration",
+  "ocr": {"brand": null, "product_title": "25 Best Black Skirt Fall Outfits for Every Occasion", "price": null, "source_domain": null, "evidence": ["25 Best Black Skirt Fall Outfits for Every Occasion"]},
+  "tags": ["pinterest", "screenshot", "indoor_daylight", "partial_crop", "layered_outfit", "accessories_present", "draft_labelled"],
+  "labelled_by": "ishan",
+  "labelled_at": "2026-08-14",
+  "review_note": "Draft only; visible white collar appears to be a separate shirt layer under the black knitwear, but only the collar is legible, so it is omitted rather than over-labelled.",
+  "garments": [
+    {"role":"top","category":"knitwear","silhouette":"oversized","colour":"black","pattern":"solid","surface_detail":["none"],"fit_ease":"oversized","fabric_look":"ribbed_knit","neckline":"crew","sleeve_length":"long","length":"hip","occasion":["everyday","work"],"vibe":["preppy","classic"],"sheerness":"opaque"},
+    {"role":"bottom","category":"skirt","silhouette":"flared","colour":"charcoal","pattern":"solid","surface_detail":["pleated"],"fit_ease":"regular","fabric_look":"crepe_look","length":"mini","occasion":["everyday","work","date"],"vibe":["preppy","classic"],"sheerness":"opaque"},
+    {"role":"footwear","category":"boots","colour":"black","pattern":"solid","surface_detail":["none"],"fabric_look":"leather_look","occasion":["everyday","work","date"],"vibe":["classic","edgy"]},
+    {"role":"bag","category":"bag","colour":"black","pattern":"solid","surface_detail":["none"],"fabric_look":"leather_look","occasion":["everyday","work","date"],"vibe":["classic","minimal"]},
+    {"role":"accessory","category":"jewellery","colour":"silver","pattern":"solid","surface_detail":["none"],"occasion":["everyday","work","date"],"vibe":["minimal","classic"]}
+  ]
+}

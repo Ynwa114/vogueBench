@@ -1,0 +1,13 @@
+{
+  "image_id": "0006_olive_strapless_ruffle_dress",
+  "image": "images/0006_olive_strapless_ruffle_dress.jpeg",
+  "caption": "Cider olive strapless ruffle mini-dress social-ad screenshot.",
+  "market": "us",
+  "distribution": "product_page",
+  "ocr": {"brand": "CIDER", "product_title": null, "price": null, "source_domain": null, "evidence": ["CIDER", "shopcider"]},
+  "tags": ["social_ad", "screenshot", "indoor_daylight", "single_garment", "text_overlay", "draft_labelled"],
+  "labelled_by": "ishan",
+  "labelled_at": "2026-08-13",
+  "review_note": "Human-reviewed; fit is close through the bodice but the skirt is flared, so a_line is the dominant silhouette.",
+  "garments": [{"role": "onepiece", "category": "dress", "silhouette": "a_line", "colour": "olive", "pattern": "solid", "surface_detail": ["ruffle"], "fit_ease": "slim", "fabric_look": "cotton_look", "neckline": "strapless", "sleeve_length": "sleeveless", "length": "mini", "occasion": ["brunch", "date", "vacation"], "vibe": ["romantic", "clean_girl"], "sheerness": "opaque"}]
+}

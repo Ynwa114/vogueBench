@@ -1,0 +1,18 @@
+{
+  "image_id": "0022_black_lace_trim_mini_fur_coat",
+  "image": "images/0022_black_lace_trim_mini_fur_coat.jpeg",
+  "caption": null,
+  "market": "us",
+  "distribution": "inspiration",
+  "ocr": {"brand": null, "product_title": null, "price": null, "source_domain": null, "evidence": []},
+  "tags": ["pinterest", "screenshot", "elevator_photo", "low_light", "layered_outfit", "accessories_present", "draft_labelled"],
+  "labelled_by": "ishan",
+  "labelled_at": "2026-08-14",
+  "review_note": "Human-reviewed; outerwear is fur-textured, dress is velvet, and the flap bag is quilted rather than checked.",
+  "garments": [
+    {"role":"outerwear","category":"coat","silhouette":"relaxed","colour":"brown","pattern":"solid","surface_detail":["none"],"fit_ease":"loose","fabric_look":"fur_look","sleeve_length":"long","length":"hip","occasion":["date","party","night_out"],"vibe":["indie_sleaze","retro"],"sheerness":"opaque"},
+    {"role":"onepiece","category":"dress","silhouette":"fitted","colour":"black","pattern":"solid","surface_detail":["lacework","ruffle"],"fit_ease":"slim","fabric_look":"velvet","neckline":"sweetheart","sleeve_length":"short","length":"mini","occasion":["date","party","night_out"],"vibe":["coquette","goth","indie_sleaze"],"sheerness":"opaque"},
+    {"role":"bag","category":"bag","colour":"black","pattern":"solid","surface_detail":["quilted"],"fabric_look":"leather_look","occasion":["date","party","night_out"],"vibe":["classic","goth"]},
+    {"role":"accessory","category":"jewellery","colour":"gold","pattern":"solid","surface_detail":["none"],"occasion":["date","party","night_out"],"vibe":["coquette","classic"]}
+  ]
+}

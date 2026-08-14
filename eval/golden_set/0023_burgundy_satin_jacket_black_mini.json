@@ -1,0 +1,20 @@
+{
+  "image_id": "0023_burgundy_satin_jacket_black_mini",
+  "image": "images/0023_burgundy_satin_jacket_black_mini.jpeg",
+  "caption": "red outfit",
+  "market": "us",
+  "distribution": "inspiration",
+  "ocr": {"brand": null, "product_title": "red outfit", "price": null, "source_domain": null, "evidence": ["red outfit"]},
+  "tags": ["pinterest", "screenshot", "low_light", "partial_crop", "layered_outfit", "accessories_present", "draft_labelled"],
+  "labelled_by": "ishan",
+  "labelled_at": "2026-08-14",
+  "review_note": "Draft only; caption says red outfit, but the visible jacket/top/bag read burgundy under low light. Pixel read wins; the caption is recorded as non-authoritative OCR evidence.",
+  "attribute_conflicts": [{"field":"colour","pixel_value":"burgundy","external_value":"red","external_source":"ocr.product_title","resolution":"pixel_read_wins"}],
+  "garments": [
+    {"role":"outerwear","category":"jacket","silhouette":"relaxed","colour":"burgundy","pattern":"solid","surface_detail":["none"],"fit_ease":"relaxed","fabric_look":"satin_look","sleeve_length":"long","length":"waist","occasion":["date","party","night_out"],"vibe":["y2k","romantic"],"sheerness":"opaque"},
+    {"role":"top","category":"top","silhouette":"fitted","colour":"burgundy","pattern":"solid","surface_detail":["lacework"],"fit_ease":"slim","fabric_look":"satin_look","neckline":"sweetheart","sleeve_length":"sleeveless","length":"waist","occasion":["date","party","night_out"],"vibe":["romantic","y2k"],"sheerness":"opaque"},
+    {"role":"bottom","category":"skirt","silhouette":"flared","colour":"black","pattern":"solid","surface_detail":["pleated"],"fit_ease":"regular","fabric_look":"denim","length":"mini","occasion":["date","party","night_out"],"vibe":["y2k","edgy"],"sheerness":"opaque"},
+    {"role":"bag","category":"bag","colour":"burgundy","pattern":"solid","surface_detail":["none"],"fabric_look":"leather_look","occasion":["date","party","night_out"],"vibe":["y2k","classic"]},
+    {"role":"accessory","category":"jewellery","colour":"silver","pattern":"solid","surface_detail":["none"],"occasion":["date","party","night_out"],"vibe":["minimal","romantic"]}
+  ]
+}

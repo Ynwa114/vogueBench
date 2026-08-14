@@ -1,0 +1,13 @@
+{
+  "image_id": "0011_blush_strapless_midi_dress",
+  "image": "images/0011_blush_strapless_midi_dress.jpeg",
+  "caption": "Sage by Mala blush strapless midi-dress product-page screenshot.",
+  "market": "us",
+  "distribution": "product_page",
+  "ocr": {"brand": "SAGE by mala", "product_title": "Athenee Dress", "price": null, "source_domain": "sagebymala.com", "evidence": ["SAGE by mala", "Athenee Dress", "sagebymala.com"]},
+  "tags": ["product_page", "screenshot", "editorial_product_photo", "single_garment", "draft_labelled"],
+  "labelled_by": "ishan",
+  "labelled_at": "2026-08-13",
+  "review_note": "Human-reviewed; the skirt is gathered rather than sharply pleated, so surface_detail is left none under the current vocabulary.",
+  "garments": [{"role": "onepiece", "category": "dress", "silhouette": "a_line", "colour": "blush", "pattern": "solid", "surface_detail": ["none"], "fit_ease": "slim", "fabric_look": "satin_look", "neckline": "strapless", "sleeve_length": "sleeveless", "length": "midi", "occasion": ["date", "wedding_guest", "formal"], "vibe": ["classic", "romantic", "old_money"], "sheerness": "opaque"}]
+}

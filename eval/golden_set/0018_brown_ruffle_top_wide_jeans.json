@@ -1,0 +1,17 @@
+{
+  "image_id": "0018_brown_ruffle_top_wide_jeans",
+  "image": "images/0018_brown_ruffle_top_wide_jeans.jpeg",
+  "caption": "Ruffle Rush & Denim",
+  "market": "us",
+  "distribution": "inspiration",
+  "ocr": {"brand": null, "product_title": "Ruffle Rush & Denim", "price": null, "source_domain": null, "evidence": ["Ruffle Rush & Denim"]},
+  "tags": ["pinterest", "screenshot", "outdoor_daylight", "full_body", "three_garments", "accessories_present", "draft_labelled"],
+  "labelled_by": "ishan",
+  "labelled_at": "2026-08-14",
+  "review_note": "Draft only; top has an asymmetric cascade of ruffles. The jeans have strong faded wash, but current pattern vocabulary has no wash value; distressed is the closest surface detail.",
+  "garments": [
+    {"role":"top","category":"top","silhouette":"fitted","colour":"chocolate","pattern":"solid","surface_detail":["ruffle","asymmetric_hem"],"fit_ease":"slim","fabric_look":"jersey","neckline":"sweetheart","sleeve_length":"sleeveless","length":"hip","occasion":["date","party","night_out"],"vibe":["romantic","indie_sleaze"],"sheerness":"opaque"},
+    {"role":"bottom","category":"jeans","silhouette":"wide_leg","colour":"denim_blue","pattern":"solid","surface_detail":["distressed"],"fit_ease":"relaxed","fabric_look":"denim","length":"full","occasion":["everyday","date","night_out"],"vibe":["streetwear","indie_sleaze"],"sheerness":"opaque"},
+    {"role":"bag","category":"bag","colour":"brown","pattern":"solid","surface_detail":["none"],"fabric_look":"suede_look","occasion":["date","night_out"],"vibe":["boho","indie_sleaze"]}
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "image_id": "0009_black_halter_button_dress",
+  "image": "images/0009_black_halter_button_dress.jpeg",
+  "caption": "Shein black button-front halter mini-dress social-ad screenshot.",
+  "market": "us",
+  "distribution": "product_page",
+  "ocr": {"brand": "SHEIN", "product_title": "Solid Button Front Halter Neck Backless Dress", "price": null, "source_domain": null, "evidence": ["sheinofficial", "Solid Button Front Halter Neck Backless Dress"]},
+  "tags": ["social_ad", "screenshot", "product_photo", "single_garment", "draft_labelled"],
+  "labelled_by": "ishan",
+  "labelled_at": "2026-08-13",
+  "review_note": "Human-reviewed; buttons are visible but no button-specific surface-detail value exists, so none is retained rather than inventing a value.",
+  "schema_observations": [{"field": "fabric_look", "observed": "technical used for structured woven crepe", "status": "observe_definition_or_value_gap"}],
+  "garments": [{"role": "onepiece", "category": "dress", "silhouette": "a_line", "colour": "black", "pattern": "solid", "surface_detail": ["none"], "fit_ease": "slim", "fabric_look": "technical", "neckline": "halter", "sleeve_length": "sleeveless", "length": "mini", "occasion": ["date", "party", "night_out"], "vibe": ["classic", "edgy"], "sheerness": "opaque"}]
+}

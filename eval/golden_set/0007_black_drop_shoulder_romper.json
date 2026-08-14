@@ -1,0 +1,16 @@
+{
+  "image_id": "0007_black_drop_shoulder_romper",
+  "image": "images/0007_black_drop_shoulder_romper.jpeg",
+  "caption": "Shein black drop-shoulder patch-pocket button-front romper social-ad screenshot.",
+  "market": "us",
+  "distribution": "product_page",
+  "ocr": {"brand": "SHEIN", "product_title": "Drop Shoulder Patch Pocket Button Front Romper", "price": null, "source_domain": null, "evidence": ["sheinofficial", "Drop Shoulder Patch Pocket Button Front Romper"]},
+  "tags": ["social_ad", "screenshot", "product_photo", "single_garment", "draft_labelled"],
+  "labelled_by": "ishan",
+  "labelled_at": "2026-08-13",
+  "review_note": "Human-reviewed; SHEIN's visible product caption confirms romper, now represented directly in category.",
+  "garments": [
+    {"role": "onepiece", "category": "romper", "silhouette": "relaxed", "colour": "black", "pattern": "solid", "surface_detail": ["none"], "fit_ease": "loose", "fabric_look": "cotton_look", "neckline": "collared", "sleeve_length": "elbow", "length": "mini", "occasion": ["everyday", "travel"], "vibe": ["utility", "minimal"], "sheerness": "opaque"},
+    {"role": "accessory", "category": "jewellery", "colour": "gold", "pattern": "solid", "surface_detail": ["none"], "occasion": ["everyday", "date"], "vibe": ["classic", "minimal"]}
+  ]
+}

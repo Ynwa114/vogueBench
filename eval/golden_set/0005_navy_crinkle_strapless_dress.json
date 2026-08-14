@@ -1,0 +1,14 @@
+{
+  "image_id": "0005_navy_crinkle_strapless_dress",
+  "image": "images/0005_navy_crinkle_strapless_dress.jpeg",
+  "caption": "Cider navy crinkle-woven strapless dress flat-lay social-ad screenshot.",
+  "market": "us",
+  "distribution": "product_page",
+  "ocr": {"brand": "CIDER", "product_title": null, "price": null, "source_domain": null, "evidence": ["CIDER", "shopcider"]},
+  "tags": ["social_ad", "screenshot", "flat_lay", "single_garment", "text_overlay", "draft_labelled"],
+  "labelled_by": "ishan",
+  "labelled_at": "2026-08-13",
+  "review_note": "Human-reviewed; the image reads solid navy and woven crinkle—not tie-dye. Exact hem length is partially obscured.",
+  "schema_observations": [{"field": "fabric_look", "observed": "crinkle/plisse texture", "status": "defer_until_repeated"}],
+  "garments": [{"role": "onepiece", "category": "dress", "silhouette": "a_line", "colour": "navy", "pattern": "solid", "surface_detail": ["ruched"], "fit_ease": "regular", "fabric_look": "cotton_look", "neckline": "strapless", "sleeve_length": "sleeveless", "length": "mini", "occasion": ["brunch", "date", "vacation"], "vibe": ["romantic", "boho"], "sheerness": "opaque"}]
+}

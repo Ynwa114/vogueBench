@@ -81,6 +81,8 @@ class Decode:
     model: str = ""
     cost_usd: float = 0.0
     latency_ms: int = 0
+    confidence_cells: int = 0
+    null_confidence_cells: int = 0
 
     def weakest(self, vocab: dict, threshold: float = 0.6) -> list[tuple[int, str, Any, float]]:
         """Attributes worth asking about. Ordered by (weight x uncertainty)."""
@@ -331,6 +333,8 @@ class DecodeEngine:
 
         # --- pass 2: one read per garment ---
         garments: list[Garment] = []
+        confidence_cells = 0
+        null_confidence_cells = 0
         for g in scene.get("garments", [])[:max_garments]:
             if g.get("visibility") == "barely":
                 continue
@@ -348,6 +352,9 @@ class DecodeEngine:
                     continue
                 raw = cell.get("value") if isinstance(cell, dict) else cell
                 raw_conf = cell.get("confidence") if isinstance(cell, dict) else None
+                if raw is not None:
+                    confidence_cells += 1
+                    null_confidence_cells += raw_conf is None
                 conf = float(raw_conf) if isinstance(raw_conf, (int, float)) else 0.5
                 val, clean = coerce(self.vocab, fname, raw)
                 if val is None or val == []:
@@ -370,7 +377,9 @@ class DecodeEngine:
             ))
 
         return Decode(decode_id=did, garments=garments, scene=scene, ocr=ocr,
-                      model=self.p.name, cost_usd=cost, latency_ms=latency)
+                      model=self.p.name, cost_usd=cost, latency_ms=latency,
+                      confidence_cells=confidence_cells,
+                      null_confidence_cells=null_confidence_cells)
 
 
 def to_query(decode: Decode, garment_index: int = 0) -> str:

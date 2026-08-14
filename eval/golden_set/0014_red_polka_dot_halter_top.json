@@ -1,0 +1,16 @@
+{
+  "image_id": "0014_red_polka_dot_halter_top",
+  "image": "images/0014_red_polka_dot_halter_top.jpeg",
+  "caption": "Nef's red white-polka-dot halter top with neck scarf product-page screenshot.",
+  "market": "us",
+  "distribution": "product_page",
+  "ocr": {"brand": "nef's", "product_title": "LOLITA TOP", "price": null, "source_domain": "nefsfinds.com", "evidence": ["nef's", "LOLITA TOP", "nefsfinds.com"]},
+  "tags": ["product_page", "screenshot", "clean_product_photo", "single_garment", "partial_outfit", "draft_labelled"],
+  "labelled_by": "ishan",
+  "labelled_at": "2026-08-13",
+  "review_note": "Human-reviewed; the visible polka-dot print is represented directly in pattern.",
+  "garments": [
+    {"role": "top", "category": "top", "silhouette": "fitted", "colour": "red", "pattern": "polka_dot", "surface_detail": ["bow"], "fit_ease": "slim", "fabric_look": "chiffon_look", "neckline": "halter", "sleeve_length": "sleeveless", "length": "waist", "occasion": ["date", "party", "vacation"], "vibe": ["romantic", "retro"], "sheerness": "semi_sheer"},
+    {"role": "accessory", "category": "scarf", "colour": "red", "pattern": "polka_dot", "surface_detail": ["none"], "fabric_look": "chiffon_look", "occasion": ["date", "party", "vacation"], "vibe": ["romantic", "retro"]}
+  ]
+}

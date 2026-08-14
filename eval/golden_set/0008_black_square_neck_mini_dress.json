@@ -1,0 +1,17 @@
+{
+  "image_id": "0008_black_square_neck_mini_dress",
+  "image": "images/0008_black_square_neck_mini_dress.jpeg",
+  "caption": "Shein black square-neck sleeveless mini-dress social-ad screenshot.",
+  "market": "us",
+  "distribution": "product_page",
+  "ocr": {"brand": "SHEIN", "product_title": "Solid Color Sleeveless Dress", "price": null, "source_domain": null, "evidence": ["sheinofficial", "Solid Color Sleeveless Dress"]},
+  "tags": ["social_ad", "screenshot", "product_photo", "single_garment", "draft_labelled"],
+  "labelled_by": "ishan",
+  "labelled_at": "2026-08-13",
+  "review_note": "Human-reviewed; small gathered side detail and asymmetric hem are visible, with asymmetric_hem the clearer current vocabulary value.",
+  "garments": [
+    {"role": "onepiece", "category": "dress", "silhouette": "fitted", "colour": "black", "pattern": "solid", "surface_detail": ["asymmetric_hem"], "fit_ease": "slim", "fabric_look": "jersey", "neckline": "square", "sleeve_length": "sleeveless", "length": "mini", "occasion": ["date", "party", "night_out"], "vibe": ["minimal", "edgy"], "sheerness": "opaque"},
+    {"role": "bag", "category": "bag", "colour": "denim_blue", "pattern": "solid", "surface_detail": ["none"], "fabric_look": "denim", "occasion": ["date", "party", "night_out"], "vibe": ["y2k", "edgy"]},
+    {"role": "accessory", "category": "jewellery", "colour": "silver", "pattern": "solid", "surface_detail": ["none"], "occasion": ["date", "party", "night_out"], "vibe": ["minimal", "edgy"]}
+  ]
+}

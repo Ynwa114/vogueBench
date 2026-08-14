@@ -15,6 +15,8 @@ from __future__ import annotations
 import argparse
 import json
 import sys
+import threading
+import time
 import traceback
 from concurrent.futures import ThreadPoolExecutor
 from datetime import datetime
@@ -26,6 +28,31 @@ sys.path.insert(0, str(ROOT))
 from decode import providers as P                      # noqa: E402
 from decode.pipeline import DecodeEngine, coerce, load_vocab   # noqa: E402
 from eval.score import LookResult, score_look, summarise, RunSummary  # noqa: E402
+
+
+class RateLimitedVision:
+    """Serialize request starts to stay within a provider's requests-per-minute cap."""
+
+    def __init__(self, provider, rpm: float):
+        if rpm <= 0:
+            raise ValueError("rpm must be greater than zero")
+        self._provider = provider
+        self._interval = 60.0 / rpm
+        self._next_start = 0.0
+        self._lock = threading.Lock()
+
+    def __getattr__(self, name):
+        return getattr(self._provider, name)
+
+    def see(self, *args, **kwargs):
+        with self._lock:
+            now = time.monotonic()
+            start_at = max(now, self._next_start)
+            self._next_start = start_at + self._interval
+        delay = start_at - now
+        if delay > 0:
+            time.sleep(delay)
+        return self._provider.see(*args, **kwargs)
 
 
 def load_golden(d: Path, only_tag: str | None = None,
@@ -44,7 +71,10 @@ def load_golden(d: Path, only_tag: str | None = None,
                 value, clean = coerce(vocab, name, garment[name])
                 if clean:
                     garment[name] = value
-        if only_tag and only_tag not in g.get("tags", []):
+        # `--only` predates the explicit distribution field. Keep it useful for
+        # ordinary tags, but let the documented distribution names select their
+        # look-level value as well.
+        if only_tag and only_tag not in g.get("tags", []) and g.get("distribution") != only_tag:
             continue
         if distribution and g.get("distribution") != distribution:
             continue
@@ -71,8 +101,8 @@ def flatten(decode) -> dict:
 
 
 def run_provider(alias: str, golden: list[dict], vocab: dict,
-                 out: Path, workers: int = 4) -> list[LookResult]:
-    prov = P.get(alias)
+                 out: Path, workers: int = 4, rpm: float = 6.0) -> list[LookResult]:
+    prov = RateLimitedVision(P.get(alias), rpm)
     engine = DecodeEngine(prov, vocab, log_dir=ROOT / "runs" / "logs")
     results: list[LookResult] = []
 
@@ -85,7 +115,9 @@ def run_provider(alias: str, golden: list[dict], vocab: dict,
             with open(out, "a") as f:
                 f.write(json.dumps({"provider": alias, "image_id": item["image_id"],
                                     "pred": pred, "score": r.score,
-                                    "hard_fails": r.hard_fails}) + "\n")
+                                    "hard_fails": r.hard_fails,
+                                    "confidence_cells": d.confidence_cells,
+                                    "null_confidence_cells": d.null_confidence_cells}) + "\n")
             return r
         except Exception as e:
             traceback.print_exc(file=sys.stderr)
@@ -139,6 +171,8 @@ def main():
     ap.add_argument("--distribution", choices=["product_page", "inspiration"], default=None,
                     help="filter golden set by source distribution")
     ap.add_argument("--workers", type=int, default=4)
+    ap.add_argument("--rpm", type=float, default=6.0,
+                    help="maximum request starts per minute per provider (default: 6)")
     ap.add_argument("--out", default=None)
     args = ap.parse_args()
 
@@ -158,7 +192,7 @@ def main():
         alias = alias.strip()
         print(f"{alias}: ", end="", flush=True)
         out = Path(args.out) if args.out else outdir / f"{stamp}_{alias}.jsonl"
-        res = run_provider(alias, golden, vocab, out, args.workers)
+        res = run_provider(alias, golden, vocab, out, args.workers, args.rpm)
         summaries.append(summarise(alias, res))
 
     print()

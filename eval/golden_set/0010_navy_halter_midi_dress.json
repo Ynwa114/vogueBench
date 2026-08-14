@@ -1,0 +1,13 @@
+{
+  "image_id": "0010_navy_halter_midi_dress",
+  "image": "images/0010_navy_halter_midi_dress.jpeg",
+  "caption": "Outcasts navy halter midi-dress product-page screenshot.",
+  "market": "us",
+  "distribution": "product_page",
+  "ocr": {"brand": "OUTCASTS", "product_title": null, "price": null, "source_domain": "outcasts.in", "evidence": ["outcasts.in", "OUTCASTS"]},
+  "tags": ["product_page", "screenshot", "editorial_product_photo", "single_garment", "draft_labelled"],
+  "labelled_by": "ishan",
+  "labelled_at": "2026-08-13",
+  "review_note": "Human-reviewed; the neckline is halter with a visible low V opening. The fluid skirt could be a_line or draped; a_line is the stronger overall read.",
+  "garments": [{"role": "onepiece", "category": "dress", "silhouette": "a_line", "colour": "navy", "pattern": "solid", "surface_detail": ["none"], "fit_ease": "regular", "fabric_look": "satin_look", "neckline": "halter", "sleeve_length": "sleeveless", "length": "midi", "occasion": ["date", "wedding_guest", "formal"], "vibe": ["classic", "romantic"], "sheerness": "opaque"}]
+}
