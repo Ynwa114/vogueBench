@@ -1,18 +1,29 @@
 # Twin — execution runbook
 
-Last updated: 2026-08-12. `BUILD.md` is authoritative; this turns it into a concrete founder checklist.
+Last updated: 2026-08-14. `BUILD.md` is authoritative; this turns it into a concrete founder checklist.
 
 ## Current state
 
 Phase 0 is built: the Python decode engine, vocabulary/predicate layer, labelling CLI,
 provider-evaluation runner, and four offline safety suites. All four suites pass.
 
-Local golden-set seed: 3 real social/mirror screenshots and 12 labelled garments. This
-validates the schema/tooling only. It is **not** a provider-quality result. Nothing has
-yet been selected or built for production: no tagger winner, ledger, feed, ingest,
-retrieval endpoint, watches, notifications, or iOS.
+The reviewed golden set now contains **23 looks** (11 product-page, 12 inspiration)
+and their versioned evaluation images. The first live provider comparison is complete:
+Sonnet 5 is the only passing provider (attribute score 0.838); Haiku 4.5 and GPT-5.6
+Terra miss the hard-fail ceiling only. OpenRouter is the sole live-provider path.
 
-The active bottleneck is 100 real, carefully labelled saved looks.
+`vibe` is the weakest field across the comparison (Sonnet 0.58, Haiku 0.57,
+GPT-5.6 0.69). This is a vocabulary/editorial diagnostic, not permission to tune a
+model or change the schema without review. The look-20 co-variance review is closed:
+keep both `silhouette` and `fit_ease`; they separate real combinations in the approved
+set.
+
+The documented expectation that product pages are easier is currently false:
+Sonnet's product-page slice scored 0.782 attribute / 0.833 detection, versus 0.842 /
+0.906 on inspiration. This weakens the router assumption in `BUILD.md`; diagnose it
+before treating product-page OCR as a cheap path. The next work is the diagnostic pass
+on those errors, then the catalog pull—the long pole that has not started. Growing from
+23 to 100 looks continues alongside catalog work rather than blocking it.
 
 ## Rules that cannot be traded away
 
@@ -22,7 +33,8 @@ The active bottleneck is 100 real, carefully labelled saved looks.
 - Proposed predicates cannot filter until an editor approves them.
 - Do not infer brand from pixels.
 - Golden data is real saved/social input, never clean retailer photography.
-- Raw screenshots stay outside Git. Git contains code and reviewed JSON labels only.
+- Approved golden-set images are versioned with their reviewed labels so evaluation is
+  reproducible. Unreviewed source screenshots remain outside Git.
 - Do not start iOS until retrieval returns a shelf we would ship via `curl`.
 
 ## What is done
@@ -63,7 +75,8 @@ Active fields: `category`, `silhouette`, `colour`, `pattern`, `surface_detail`,
 - `surface_detail` includes applied and construction details: embroidery, sequin,
   beadwork, mirrorwork, zari, lacework, applique, ruching, ruffle, pleats, bow,
   cutout, twist, asymmetric hem, distressing.
-- `fit_ease` stays separate from `silhouette` until a look-20 co-occurrence review.
+- `fit_ease` stays separate from `silhouette`; the look-20 review confirmed useful
+  non-redundant combinations.
 - `sheerness` is opaque / semi-sheer / sheer. `modesty` and garment `coverage` are
   retired.
 - `rise`, `sleeve_style`, coverage, closure, pockets, hemline, stretch, lining, and
